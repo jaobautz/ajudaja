@@ -1,0 +1,266 @@
+/* ======================================================= */
+/* AJUDAJÁ - TEMA FINAL V6.0 (COM AVATARES)                */
+/* ======================================================= */
+
+/* ===== Importação da Fonte e Variáveis Globais ===== */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+
+:root {
+    --background-color: #f4f7f9;
+    --card-background: #ffffff;
+    --text-color-primary: #2d3748;
+    --text-color-secondary: #718096;
+    --primary-green: #28a745;
+    --dark-green: #218838;
+    --border-color: #e2e8f0;
+    --border-radius: 16px;
+    --shadow-soft: 0 4px 12px rgba(0, 0, 0, 0.06);
+    --shadow-hover: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* ===== Estilos Base ===== */
+* { box-sizing: border-box; }
+
+body {
+    font-family: 'Poppins', sans-serif;
+    margin: 0;
+    background-color: var(--background-color);
+    color: var(--text-color-primary);
+    line-height: 1.7;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.container {
+    /* ALTERAÇÃO: Aumentei a largura máxima para o site ocupar mais espaço na tela */
+    max-width: 1200px; 
+    margin: 0 auto;
+    padding: 0 15px;
+}
+
+h2 {
+    color: var(--text-color-primary);
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 2.5rem;
+    border-bottom: none;
+}
+
+/* ===== Header / Navbar ===== */
+.header .navbar {
+    background: var(--card-background) !important;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    padding: 1rem;
+    margin-bottom: 2rem;
+}
+.navbar-brand {
+    color: var(--primary-green) !important;
+    font-weight: 700;
+    font-size: 1.6em;
+}
+.nav-link {
+    color: var(--text-color-secondary) !important;
+    font-weight: 500;
+    transition: color 0.3s ease;
+}
+.nav-link:hover {
+    color: var(--primary-green) !important;
+}
+
+
+/* ======================================================= */
+/* ESTILO DE CARD UNIFORME E ESTRUTURADO                   */
+/* ======================================================= */
+.pedido {
+    background: var(--card-background);
+    border-radius: var(--border-radius);
+    padding: 2rem;
+    margin-bottom: 2rem;
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-soft);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    display: flex; 
+    flex-direction: column; 
+    min-height: auto;
+}
+
+.pedido:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-hover);
+}
+
+.pedido-content {
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1; 
+}
+
+.pedido h3 {
+    font-size: 1.6rem; 
+    font-weight: 700;
+    color: var(--text-color-primary);
+    margin-top: 0;
+    margin-bottom: 0.75rem;
+    line-height: 1.3; 
+}
+
+.pedido p {
+    color: var(--text-color-secondary);
+    font-size: 1rem;
+    margin-bottom: 1rem;
+    flex-grow: 0;
+}
+
+/* ===== Botão de Ação ===== */
+.ajudar-btn {
+    background: var(--primary-green) !important;
+    color: white !important;
+    border: none;
+    padding: 14px 24px;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 1rem;
+    text-align: center;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(40, 167, 69, 0.2);
+    cursor: pointer;
+    width: 100%; 
+    margin-top: 1rem;
+}
+.ajudar-btn:hover {
+    background: var(--dark-green) !important;
+    transform: translateY(-2px);
+    box-shadow: 0 7px 18px rgba(40, 167, 69, 0.3);
+}
+.ajudar-btn i {
+    margin-right: 8px;
+}
+
+
+/* ===== Tags de Urgência ===== */
+.urgencia-tag {
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 0.85em;
+    font-weight: 600;
+    color: white;
+    display: inline-block;
+    margin-bottom: 1rem;
+}
+.urgencia-tag.urgente { background: #dc3545; }
+.urgencia-tag.pode-esperar { background: #fd7e14; }
+.urgencia-tag.daqui-a-uma-semana { background: #6c757d; }
+
+
+/* ===== Formulários Limpos e Claros ===== */
+.form-label {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+.form-control, .form-select {
+    background-color: var(--card-background);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 1rem;
+    color: var(--text-color-primary);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.form-control:focus, .form-select:focus {
+    border-color: var(--primary-green);
+    box-shadow: 0 0 0 0.25rem rgba(40, 167, 69, 0.15);
+    background-color: var(--card-background);
+}
+.btn-success {
+    background: var(--primary-green) !important;
+    border: none !important;
+    padding: 1rem;
+    border-radius: 12px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+.btn-success:hover {
+    background: var(--dark-green) !important;
+}
+
+
+/* ===== Outros Ajustes ===== */
+.no-pedidos {
+    text-align: center;
+    color: var(--text-color-secondary);
+    padding: 40px;
+    width: 100%;
+}
+.pedido-icon { 
+    display: none; 
+}
+
+/* ======================================================= */
+/* ESTILOS PARA LISTA/DETALHES E AVATAR                    */
+/* ======================================================= */
+.pedido-link {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+}
+.pedido-link:hover {
+    color: inherit;
+}
+.ver-mais {
+    color: var(--primary-green);
+    font-weight: 600;
+    margin-top: auto;
+    padding-top: 1rem;
+    align-self: flex-start;
+}
+.detalhe-container {
+    background-color: var(--card-background);
+    border-radius: var(--border-radius);
+    padding: 2.5rem;
+    border: 1px solid var(--border-color);
+    box-shadow: var(--shadow-soft);
+}
+.detalhe-header h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-top: 1rem;
+    color: var(--text-color-primary);
+}
+.detalhe-meta {
+    font-size: 0.9rem;
+    color: var(--text-color-secondary);
+    margin-bottom: 1.5rem;
+}
+.detalhe-body {
+    padding: 1.5rem 0;
+}
+.detalhe-descricao {
+    font-size: 1.1rem;
+    line-height: 1.8;
+}
+.detalhe-footer {
+    text-align: center;
+    margin-top: 2rem;
+}
+
+/* NOVOS ESTILOS PARA O AVATAR E NOME DO AUTOR */
+.pedido-autor {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+}
+.autor-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: var(--background-color);
+    border: 2px solid white;
+    box-shadow: 0 0 0 2px var(--primary-green);
+}
+.autor-nome {
+    font-weight: 600;
+    color: var(--text-color-primary);
+}
