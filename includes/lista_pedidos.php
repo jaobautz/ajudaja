@@ -1,77 +1,72 @@
 <?php
-// Não precisa de include 'config.php' se já estiver incluído na página que chama
+// Garante que a conexão com o banco de dados exista
 if (!isset($conn)) {
     include 'config.php';
 }
 
+// Lógica de busca e filtro
 $busca = isset($_GET['busca']) ? trim($_GET['busca']) : '';
+$categoria_filtro = isset($_GET['categoria']) ? $_GET['categoria'] : '';
 $urgencia_filtro = isset($_GET['urgencia']) ? $_GET['urgencia'] : '';
 
-// MODIFICAÇÃO: Usamos um JOIN para buscar o nome do usuário junto com os dados do pedido
-$sql = "SELECT p.*, u.nome as autor_nome 
+// --- ALTERAÇÃO PRINCIPAL: Adicionado LEFT JOIN e COUNT para contar comentários ---
+$sql = "SELECT p.*, u.nome as autor_nome, COUNT(c.id) as total_comentarios
         FROM pedidos p
         JOIN usuarios u ON p.usuario_id = u.id
+        LEFT JOIN comentarios c ON p.id = c.pedido_id
         WHERE p.status = 'Aberto'";
-
 $params = [];
-$types = "";
+$param_count = 1;
 
-if ($busca) {
-    $sql .= " AND (p.titulo LIKE ? OR p.descricao LIKE ? OR p.categoria LIKE ?)";
-    $busca_param = "%$busca%";
-    $params[] = $busca_param;
-    $params[] = $busca_param;
-    $params[] = $busca_param;
-    $types .= "sss";
+if (!empty($busca)) {
+    $sql .= " AND (p.titulo ILIKE $" . $param_count . " OR p.descricao ILIKE $" . $param_count . ")";
+    $params[] = "%" . $busca . "%";
+    $param_count++;
 }
-if ($urgencia_filtro) {
-    $sql .= " AND p.urgencia = ?";
+if (!empty($categoria_filtro)) {
+    $sql .= " AND p.categoria = $" . $param_count++;
+    $params[] = $categoria_filtro;
+}
+if (!empty($urgencia_filtro)) {
+    $sql .= " AND p.urgencia = $" . $param_count++;
     $params[] = $urgencia_filtro;
-    $types .= "s";
 }
-$sql .= " ORDER BY p.data_postagem DESC";
 
-$stmt = $conn->prepare($sql);
-if (!empty($params)) {
-    $stmt->bind_param($types, ...$params);
-}
-$stmt->execute();
-$result = $stmt->get_result();
+// --- ALTERAÇÃO PRINCIPAL: Adicionado GROUP BY para a contagem funcionar ---
+$sql .= " GROUP BY p.id, u.id ORDER BY p.data_postagem DESC";
 
-if ($result->num_rows > 0) {
-    while ($row = $result->fetch_assoc()) {
-        // Trunca a descrição para mostrar apenas um resumo
-        $descricao_curta = strlen($row['descricao']) > 120 
-            ? substr($row['descricao'], 0, 120) . "..." 
-            : $row['descricao'];
 
-        // Prepara o nome para usar na URL do avatar
+if (@pg_query($conn, "DEALLOCATE list_pedidos")) {}
+pg_prepare($conn, "list_pedidos", $sql);
+$result = pg_execute($conn, "list_pedidos", $params);
+
+if ($result && pg_num_rows($result) > 0) {
+    while ($row = pg_fetch_assoc($result)) {
+        $descricao_curta = strlen($row['descricao']) > 100 ? substr($row['descricao'], 0, 100) . "..." : $row['descricao'];
         $avatar_seed = urlencode($row['autor_nome']);
+        
+        $urgencia_class = strtolower(str_replace([' ', 'ã'], ['-', 'a'], $row['urgencia']));
 
-        // ALTERAÇÃO: Trocado 'col-lg-8 offset-lg-2' por 'col-lg-12' para ocupar a largura total
         echo "<div class='col-lg-12'>";
         echo "  <a href='pedido_detalhe.php?id=" . $row['id'] . "' class='pedido-link'>";
-        echo "    <div id='pedido-" . $row['id'] . "' class='pedido'>";
-        
-        // NOVO BLOCO: Avatar e Nome do Autor
+        echo "    <div class='pedido'>";
         echo "      <div class='pedido-autor'>";
-        echo "          <img src='https://api.dicebear.com/8.x/initials/svg?seed=" . $avatar_seed . "' alt='Avatar de " . htmlspecialchars($row['autor_nome']) . "' class='autor-avatar'>";
+        echo "          <img src='https://api.dicebear.com/8.x/initials/svg?seed=" . $avatar_seed . "' alt='Avatar' class='autor-avatar'>";
         echo "          <span class='autor-nome'>" . htmlspecialchars($row['autor_nome']) . "</span>";
         echo "      </div>";
-        
-        // Conteúdo do pedido
-        echo "      <div class='pedido-content'>";
-        echo "          <span class='urgencia-tag " . strtolower(str_replace(' ', '-', $row['urgencia'])) . "'>" . htmlspecialchars($row['urgencia']) . "</span>";
-        echo "          <h3>" . htmlspecialchars($row['titulo']) . "</h3>";
-        echo "          <p>" . htmlspecialchars($descricao_curta) . "</p>";
-        echo "          <span class='ver-mais'>Ver detalhes &rarr;</span>";
+        echo "      <h3>" . htmlspecialchars($row['titulo']) . "</h3>";
+        echo "      <p class='text-secondary'>" . htmlspecialchars($descricao_curta) . "</p>";
+        echo "      <div class='pedido-meta'>";
+        echo "          <div class='tag-urgencia " . $urgencia_class . "'>" . htmlspecialchars($row['urgencia']) . "</div>";
+        echo "          <span><i data-lucide='tag'></i>" . htmlspecialchars($row['categoria']) . "</span>";
+        // --- NOVO ELEMENTO: Exibindo o contador de comentários ---
+        echo "          <span class='ms-auto'><i data-lucide='message-square'></i> " . $row['total_comentarios'] . " Comentários</span>";
         echo "      </div>";
         echo "    </div>";
         echo "  </a>";
         echo "</div>";
     }
 } else {
-    echo "<p class='no-pedidos'>Nenhum pedido encontrado com esses filtros. <a href='cadastrar.php'>Seja o primeiro a postar!</a></p>";
+    echo "<div class='col-12 text-center card p-5'><p class='lead'>Nenhum pedido encontrado com os filtros selecionados.</p></div>";
 }
-$stmt->close();
 ?>

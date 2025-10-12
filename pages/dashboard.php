@@ -1,166 +1,167 @@
 <?php
-session_start();
+$page_title = 'Meu Painel - AjudaJá';
+$include_chartjs = true; // Habilita o script do Chart.js no footer
 include '../includes/config.php';
-
-// Protege a página: se o usuário não estiver logado, redireciona para o login
-if (!isset($_SESSION['usuario_id'])) {
-    header('Location: login.php');
-    exit;
-}
+include '../includes/autenticacao.php';
 
 $usuario_id = $_SESSION['usuario_id'];
 
-// Contagens para Stats (APENAS DO USUÁRIO LOGADO)
-$stmt_total = $conn->prepare("SELECT COUNT(*) FROM pedidos WHERE usuario_id = ?");
-$stmt_total->bind_param("i", $usuario_id);
-$stmt_total->execute();
-$total = $stmt_total->get_result()->fetch_row()[0];
-$stmt_total->close();
+// Função auxiliar para executar consultas de contagem
+function pg_fetch_count($conn, $query_name, $sql, $params) {
+    if (@pg_query($conn, "DEALLOCATE {$query_name}")) {}
+    pg_prepare($conn, $query_name, $sql);
+    $result = pg_execute($conn, $query_name, $params);
+    return ($result && pg_num_rows($result) > 0) ? (int)pg_fetch_result($result, 0, 0) : 0;
+}
 
-$stmt_urgentes = $conn->prepare("SELECT COUNT(*) FROM pedidos WHERE usuario_id = ? AND urgencia='Urgente'");
-$stmt_urgentes->bind_param("i", $usuario_id);
-$stmt_urgentes->execute();
-$urgentes = $stmt_urgentes->get_result()->fetch_row()[0];
-$stmt_urgentes->close();
-
-$stmt_abertos = $conn->prepare("SELECT COUNT(*) FROM pedidos WHERE usuario_id = ? AND status='Aberto'");
-$stmt_abertos->bind_param("i", $usuario_id);
-$stmt_abertos->execute();
-$abertos = $stmt_abertos->get_result()->fetch_row()[0];
-$stmt_abertos->close();
-
+// 1. DADOS PARA OS CARDS DE ESTATÍSTICAS
+$total = pg_fetch_count($conn, "count_total", "SELECT COUNT(*) FROM pedidos WHERE usuario_id = $1", array($usuario_id));
+$urgentes = pg_fetch_count($conn, "count_urgentes", "SELECT COUNT(*) FROM pedidos WHERE usuario_id = $1 AND urgencia='Urgente'", array($usuario_id));
+$abertos = pg_fetch_count($conn, "count_abertos", "SELECT COUNT(*) FROM pedidos WHERE usuario_id = $1 AND status='Aberto'", array($usuario_id));
 $concluidos = $total - $abertos;
 
-// Contagens por Categoria para o gráfico (APENAS DO USUÁRIO LOGADO)
-$stmt_cat = $conn->prepare("SELECT categoria, COUNT(*) as count FROM pedidos WHERE usuario_id = ? GROUP BY categoria ORDER BY count DESC");
-$stmt_cat->bind_param("i", $usuario_id);
-$stmt_cat->execute();
-$categorias_result = $stmt_cat->get_result();
-$labels_cat = [];
-$data_cat = [];
-while ($row = $categorias_result->fetch_assoc()) {
-    $labels_cat[] = $row['categoria'];
-    $data_cat[] = $row['count'];
+// 2. DADOS PARA O GRÁFICO DE CATEGORIAS
+$dados_categoria = ['labels' => [], 'data' => []];
+$sql_cat = "SELECT categoria, COUNT(*) as total FROM pedidos WHERE usuario_id = $1 GROUP BY categoria ORDER BY total DESC";
+if (@pg_query($conn, "DEALLOCATE count_by_cat")) {}
+pg_prepare($conn, "count_by_cat", $sql_cat);
+$result_cat = pg_execute($conn, "count_by_cat", array($usuario_id));
+if ($result_cat) {
+    while($row = pg_fetch_assoc($result_cat)) {
+        $dados_categoria['labels'][] = $row['categoria'];
+        $dados_categoria['data'][] = (int)$row['total'];
+    }
 }
-$stmt_cat->close();
 
-// Contagens por Urgência para o gráfico (APENAS DO USUÁRIO LOGADO)
-$stmt_urg = $conn->prepare("SELECT urgencia, COUNT(*) as count FROM pedidos WHERE usuario_id = ? GROUP BY urgencia");
-$stmt_urg->bind_param("i", $usuario_id);
-$stmt_urg->execute();
-$urgencias_result = $stmt_urg->get_result();
-$labels_urg = [];
-$data_urg = [];
-while ($row = $urgencias_result->fetch_assoc()) {
-    $labels_urg[] = $row['urgencia'];
-    $data_urg[] = $row['count'];
+// 3. DADOS PARA O GRÁFICO DE URGÊNCIA
+$dados_urgencia = ['labels' => [], 'data' => []];
+$sql_urg = "SELECT urgencia, COUNT(*) as total FROM pedidos WHERE usuario_id = $1 GROUP BY urgencia ORDER BY urgencia";
+if (@pg_query($conn, "DEALLOCATE count_by_urg")) {}
+pg_prepare($conn, "count_by_urg", $sql_urg);
+$result_urg = pg_execute($conn, "count_by_urg", array($usuario_id));
+if ($result_urg) {
+    while($row = pg_fetch_assoc($result_urg)) {
+        $dados_urgencia['labels'][] = $row['urgencia'];
+        $dados_urgencia['data'][] = (int)$row['total'];
+    }
 }
-$stmt_urg->close();
+
 ?>
 
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - AjudaJá</title>
+<?php include '../includes/header.php'; ?>
+
+<main class="container my-5">
+    <div class="text-center mb-5">
+        <h1 class="display-6 fw-bold">Meu Painel de Controle</h1>
+        <p class="lead text-secondary">Olá, <?php echo htmlspecialchars($_SESSION['usuario_nome']); ?>! Acompanhe suas estatísticas e gerencie seus pedidos.</p>
+    </div>
     
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="../css/style.css">
-</head>
-<body>
-    <header class="header">
-        <nav class="navbar navbar-dark bg-success">
-            <div class="container">
-                <a class="navbar-brand" href="index.php"><i class="fas fa-arrow-left"></i> Voltar à Home</a>
-                <a class="navbar-brand" href="cadastrar.php"><i class="fas fa-plus"></i> Novo Pedido</a>
+    <div class="row mb-5 g-4">
+        <div class="col-lg-3 col-md-6">
+            <div class="stat-card h-100">
+                <div class="stat-card-icon" style="background-color: #3B82F6;"><i data-lucide="list"></i></div>
+                <h5 class="stat-card-title">Total de Pedidos</h5>
+                <p class="stat-card-number"><?php echo $total; ?></p>
             </div>
-        </nav>
-    </header>
+        </div>
+        <div class="col-lg-3 col-md-6">
+            <div class="stat-card h-100">
+                <div class="stat-card-icon" style="background-color: var(--danger-color);"><i data-lucide="siren"></i></div>
+                <h5 class="stat-card-title">Urgentes</h5>
+                <p class="stat-card-number"><?php echo $urgentes; ?></p>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6">
+             <div class="stat-card h-100">
+                <div class="stat-card-icon" style="background-color: var(--warning-color);"><i data-lucide="clock"></i></div>
+                <h5 class="stat-card-title">Abertos</h5>
+                <p class="stat-card-number"><?php echo $abertos; ?></p>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6">
+            <div class="stat-card h-100">
+                <div class="stat-card-icon" style="background-color: var(--primary-color);"><i data-lucide="check-circle-2"></i></div>
+                <h5 class="stat-card-title">Concluídos</h5>
+                <p class="stat-card-number"><?php echo $concluidos; ?></p>
+            </div>
+        </div>
+    </div>
+    
+    <?php if ($total > 0): ?>
+    <div class="row mb-5 g-4">
+        <div class="col-md-6">
+            <div class="card h-100" style="border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); border: 1px solid var(--border-color);">
+                <div class="card-body">
+                    <h5 class="card-title text-center mb-3">Pedidos por Categoria</h5>
+                    <canvas id="grafico-categoria"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card h-100" style="border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); border: 1px solid var(--border-color);">
+                <div class="card-body">
+                    <h5 class="card-title text-center mb-3">Pedidos por Urgência</h5>
+                    <canvas id="grafico-urgencia"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    <?php endif; ?>
 
-    <main class="container my-4">
-        <h2 class="mb-4"><i class="fas fa-chart-bar"></i> Meu Dashboard</h2>
-        <h5 class="text-muted mb-4">Olá, <?php echo htmlspecialchars($_SESSION['usuario_nome']); ?>!</h5>
+    <h3 class="text-center mb-4">Gerenciar Meus Pedidos</h3>
+    <div id="lista-pedidos-dash" class="row">
+        <?php
+        // --- ALTERAÇÃO PRINCIPAL: Query agora conta os comentários ---
+        $sql_pedidos = "SELECT p.*, u.nome as autor_nome, COUNT(c.id) as total_comentarios
+                        FROM pedidos p 
+                        JOIN usuarios u ON p.usuario_id = u.id
+                        LEFT JOIN comentarios c ON p.id = c.pedido_id
+                        WHERE p.usuario_id = $1 
+                        GROUP BY p.id, u.id
+                        ORDER BY p.data_postagem DESC";
         
-        <div class="row mb-4">
-            <div class="col-md-3 mb-3"><div class="card text-center bg-light"><div class="card-body"><i class="fas fa-list fa-2x text-success"></i><h5 class="card-title">Total de Pedidos</h5><p class="fs-3"><?php echo $total; ?></p></div></div></div>
-            <div class="col-md-3 mb-3"><div class="card text-center bg-light"><div class="card-body"><i class="fas fa-exclamation-triangle fa-2x text-danger"></i><h5 class="card-title">Urgentes</h5><p class="fs-3"><?php echo $urgentes; ?></p></div></div></div>
-            <div class="col-md-3 mb-3"><div class="card text-center bg-light"><div class="card-body"><i class="fas fa-door-open fa-2x text-primary"></i><h5 class="card-title">Abertos</h5><p class="fs-3"><?php echo $abertos; ?></p></div></div></div>
-            <div class="col-md-3 mb-3"><div class="card text-center bg-light"><div class="card-body"><i class="fas fa-check-circle fa-2x text-success"></i><h5 class="card-title">Concluídos</h5><p class="fs-3"><?php echo $concluidos; ?></p></div></div></div>
-        </div>
+        if (@pg_query($conn, "DEALLOCATE list_dashboard_pedidos")) {}
+        pg_prepare($conn, "list_dashboard_pedidos", $sql_pedidos);
+        $result_all = pg_execute($conn, "list_dashboard_pedidos", array($usuario_id));
 
-        <div class="row mb-4">
-            <div class="col-md-6"><h5>Meus Pedidos por Categoria</h5><canvas id="grafico-categoria"></canvas></div>
-            <div class="col-md-6"><h5>Meus Pedidos por Urgência</h5><canvas id="grafico-urgencia"></canvas></div>
-        </div>
-
-        <h3 class="mb-3">Gerenciar Meus Pedidos</h3>
-        <div id="lista-pedidos-dash" class="row">
-            <?php
-            // MODIFICAÇÃO: A query agora também busca o nome do autor (embora seja sempre o mesmo no dashboard, é bom para consistência)
-            $stmt_pedidos = $conn->prepare("SELECT p.*, u.nome as autor_nome 
-                                            FROM pedidos p
-                                            JOIN usuarios u ON p.usuario_id = u.id
-                                            WHERE p.usuario_id = ? ORDER BY p.data_postagem DESC");
-            $stmt_pedidos->bind_param("i", $usuario_id);
-            $stmt_pedidos->execute();
-            $result_all = $stmt_pedidos->get_result();
-
-            if ($result_all->num_rows > 0) {
-                while($row = $result_all->fetch_assoc()) {
-                    $status_class = $row['status'] == 'Concluído' ? 'opacity-50' : '';
-                    $descricao_curta = strlen($row['descricao']) > 100 
-                        ? substr($row['descricao'], 0, 100) . "..." 
-                        : $row['descricao'];
-                    
-                    $avatar_seed = urlencode($row['autor_nome']);
-
-                    // ALTERAÇÃO: Trocado 'col-lg-8 offset-lg-2' por 'col-lg-12' para ocupar a largura total
-                    echo "<div class='col-lg-12'>";
-                    echo "  <a href='pedido_detalhe.php?id=" . $row['id'] . "' class='pedido-link'>";
-                    echo "      <div class='pedido " . $status_class . "'>";
-                    
-                    // NOVO BLOCO: Avatar e Nome do Autor
-                    echo "          <div class='pedido-autor'>";
-                    echo "              <img src='https://api.dicebear.com/8.x/initials/svg?seed=" . $avatar_seed . "' alt='Avatar de " . htmlspecialchars($row['autor_nome']) . "' class='autor-avatar'>";
-                    echo "              <span class='autor-nome'>" . htmlspecialchars($row['autor_nome']) . "</span>";
-                    echo "          </div>";
-                    
-                    // Conteúdo do pedido
-                    echo "          <div class='pedido-content'>";
-                    echo "              <span class='urgencia-tag " . strtolower(str_replace(' ', '-', $row['urgencia'])) . "'>" . htmlspecialchars($row['urgencia']) . "</span>";
-                    echo "              <h3>" . htmlspecialchars($row['titulo']) . "</h3>";
-                    echo "              <p><strong>Status:</strong> " . $row['status'] . "</p>";
-                    echo "              <p>" . htmlspecialchars($descricao_curta) . "</p>";
-                    echo "              <span class='ver-mais'>Ver ou gerenciar &rarr;</span>";
-                    echo "          </div>";
-                    echo "      </div>";
-                    echo "  </a>";
-                    echo "</div>";
-                }
-            } else {
-                echo "<p class='no-pedidos'>Você ainda não cadastrou nenhum pedido. <a href='cadastrar.php'>Crie o primeiro!</a></p>";
+        if ($result_all && pg_num_rows($result_all) > 0) {
+            while($row = pg_fetch_assoc($result_all)) {
+                $status_class = $row['status'] == 'Concluído' ? 'opacity-50' : '';
+                $avatar_seed = urlencode($row['autor_nome']);
+                
+                echo "<div class='col-lg-12'>";
+                echo "  <a href='pedido_detalhe.php?id=" . $row['id'] . "' class='pedido-link'>";
+                echo "      <div class='pedido " . $status_class . "'>";
+                echo "          <div class='d-flex justify-content-between align-items-center mb-3'>";
+                echo "              <div class='pedido-autor'>";
+                echo "                  <img src='https://api.dicebear.com/8.x/initials/svg?seed=" . $avatar_seed . "' alt='Avatar' class='autor-avatar'>";
+                echo "                  <span class='autor-nome'>" . htmlspecialchars($row['autor_nome']) . "</span>";
+                echo "              </div>";
+                echo "              <span class='badge bg-" . ($row['status'] == 'Aberto' ? 'success' : 'secondary') . "'>" . $row['status'] . "</span>";
+                echo "          </div>";
+                echo "          <h3>" . htmlspecialchars($row['titulo']) . "</h3>";
+                // --- NOVO ELEMENTO: Exibindo o contador de comentários ---
+                echo "          <div class='pedido-meta border-top pt-3 mt-3'>";
+                echo "              <span><i data-lucide='message-square'></i> " . $row['total_comentarios'] . " Comentários</span>";
+                echo "          </div>";
+                echo "      </div>";
+                echo "  </a>";
+                echo "</div>";
             }
-            $stmt_pedidos->close();
-            ?>
-        </div>
-    </main>
-    
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-    
-    <script>
-        const dadosCategoria = {
-            labels: <?php echo json_encode($labels_cat); ?>,
-            data: <?php echo json_encode($data_cat); ?>
-        };
-        const dadosUrgencia = {
-            labels: <?php echo json_encode($labels_urg); ?>,
-            data: <?php echo json_encode($data_urg); ?>
-        };
-    </script>
-    
-    <script src="../js/script.js" defer></script>
-</body>
-</html>
+        } else {
+            echo "<div class='col-12 text-center card p-5' style='border-radius: var(--radius-lg); box-shadow: var(--shadow-sm); border: 1px solid var(--border-color);'>";
+            echo "  <p class='lead'>Você ainda não cadastrou nenhum pedido.</p>";
+            echo "  <a href='cadastrar.php' class='btn btn-success mt-3 mx-auto' style='width: auto;'><i data-lucide='plus-circle'></i> Criar meu primeiro pedido</a>";
+            echo "</div>";
+        }
+        pg_close($conn);
+        ?>
+    </div>
+</main>
+
+<script>
+    const dadosCategoria = <?php echo json_encode($dados_categoria); ?>;
+    const dadosUrgencia = <?php echo json_encode($dados_urgencia); ?>;
+</script>
+
+<?php include '../includes/footer.php'; ?>

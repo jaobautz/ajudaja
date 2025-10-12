@@ -11,28 +11,25 @@ if (empty($email) || empty($senha)) {
     exit;
 }
 
-$sql = "SELECT id, nome, senha FROM usuarios WHERE email = ?";
-$stmt = $conn->prepare($sql);
-$stmt->bind_param("s", $email);
-$stmt->execute();
-$result = $stmt->get_result();
+$sql = "SELECT id, nome, senha FROM usuarios WHERE email = $1";
+pg_prepare($conn, "login_user", $sql);
+$result = pg_execute($conn, "login_user", array($email));
 
-if ($result->num_rows === 1) {
-    $usuario = $result->fetch_assoc();
+if ($result && pg_num_rows($result) === 1) {
+    $usuario = pg_fetch_assoc($result);
     
-    // Verifica a senha
     if (password_verify($senha, $usuario['senha'])) {
         // Login bem-sucedido
         $_SESSION['usuario_id'] = $usuario['id'];
         $_SESSION['usuario_nome'] = $usuario['nome'];
+        pg_close($conn);
         header('Location: ../pages/dashboard.php');
         exit;
     }
 }
 
-// Se chegou até aqui, o login falhou
 $_SESSION['erro'] = "Email ou senha inválidos.";
+pg_close($conn);
 header('Location: ../pages/login.php');
 exit;
-
 ?>

@@ -1,266 +1,104 @@
 /* ======================================================= */
-/* AJUDAJÁ - TEMA FINAL V6.0 (COM AVATARES)                */
+/* AJUDAJÁ - TEMA PROFISSIONAL V9.0                        */
 /* ======================================================= */
 
 /* ===== Importação da Fonte e Variáveis Globais ===== */
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
 
 :root {
-    --background-color: #f4f7f9;
-    --card-background: #ffffff;
-    --text-color-primary: #2d3748;
-    --text-color-secondary: #718096;
-    --primary-green: #28a745;
-    --dark-green: #218838;
-    --border-color: #e2e8f0;
-    --border-radius: 16px;
-    --shadow-soft: 0 4px 12px rgba(0, 0, 0, 0.06);
-    --shadow-hover: 0 8px 20px rgba(0, 0, 0, 0.1);
+    --primary-color: #10B981; /* Verde Esmeralda (Stripe/Linear inspired) */
+    --primary-dark: #059669;
+    --primary-light: #D1FAE5;
+    --text-primary: #1F2937; /* Cinza Chumbo */
+    --text-secondary: #6B7280; /* Cinza Médio */
+    --background-color: #F9FAFB; /* Cinza muito claro */
+    --card-background: #FFFFFF;
+    --border-color: #E5E7EB; /* Cinza Claro */
+    --danger-color: #EF4444;
+    --warning-color: #F59E0B;
+    --neutral-color: #64748b;
+    --font-family: 'Inter', sans-serif;
+    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+    --radius-md: 0.5rem;
+    --radius-lg: 0.75rem;
+    --transition: all 0.2s ease-in-out;
 }
 
 /* ===== Estilos Base ===== */
 * { box-sizing: border-box; }
-
 body {
-    font-family: 'Poppins', sans-serif;
+    font-family: var(--font-family);
     margin: 0;
     background-color: var(--background-color);
-    color: var(--text-color-primary);
-    line-height: 1.7;
+    color: var(--text-primary);
+    line-height: 1.6;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }
-
-.container {
-    /* ALTERAÇÃO: Aumentei a largura máxima para o site ocupar mais espaço na tela */
-    max-width: 1200px; 
-    margin: 0 auto;
-    padding: 0 15px;
-}
-
-h2 {
-    color: var(--text-color-primary);
-    font-weight: 700;
-    text-align: center;
-    margin-bottom: 2.5rem;
-    border-bottom: none;
-}
+.container { max-width: 1100px; margin: 0 auto; padding: 0 1rem; }
+h1, h2, h3 { font-weight: 700; color: var(--text-primary); }
 
 /* ===== Header / Navbar ===== */
 .header .navbar {
     background: var(--card-background) !important;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-    padding: 1rem;
-    margin-bottom: 2rem;
-}
-.navbar-brand {
-    color: var(--primary-green) !important;
-    font-weight: 700;
-    font-size: 1.6em;
-}
-.nav-link {
-    color: var(--text-color-secondary) !important;
-    font-weight: 500;
-    transition: color 0.3s ease;
-}
-.nav-link:hover {
-    color: var(--primary-green) !important;
-}
-
-
-/* ======================================================= */
-/* ESTILO DE CARD UNIFORME E ESTRUTURADO                   */
-/* ======================================================= */
-.pedido {
-    background: var(--card-background);
-    border-radius: var(--border-radius);
-    padding: 2rem;
-    margin-bottom: 2rem;
-    border: 1px solid var(--border-color);
-    box-shadow: var(--shadow-soft);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    display: flex; 
-    flex-direction: column; 
-    min-height: auto;
-}
-
-.pedido:hover {
-    transform: translateY(-5px);
-    box-shadow: var(--shadow-hover);
-}
-
-.pedido-content {
-    text-align: left;
-    display: flex;
-    flex-direction: column;
-    flex-grow: 1; 
-}
-
-.pedido h3 {
-    font-size: 1.6rem; 
-    font-weight: 700;
-    color: var(--text-color-primary);
-    margin-top: 0;
-    margin-bottom: 0.75rem;
-    line-height: 1.3; 
-}
-
-.pedido p {
-    color: var(--text-color-secondary);
-    font-size: 1rem;
-    margin-bottom: 1rem;
-    flex-grow: 0;
-}
-
-/* ===== Botão de Ação ===== */
-.ajudar-btn {
-    background: var(--primary-green) !important;
-    color: white !important;
-    border: none;
-    padding: 14px 24px;
-    border-radius: 12px;
-    font-weight: 600;
-    font-size: 1rem;
-    text-align: center;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 15px rgba(40, 167, 69, 0.2);
-    cursor: pointer;
-    width: 100%; 
-    margin-top: 1rem;
-}
-.ajudar-btn:hover {
-    background: var(--dark-green) !important;
-    transform: translateY(-2px);
-    box-shadow: 0 7px 18px rgba(40, 167, 69, 0.3);
-}
-.ajudar-btn i {
-    margin-right: 8px;
-}
-
-
-/* ===== Tags de Urgência ===== */
-.urgencia-tag {
-    padding: 6px 16px;
-    border-radius: 20px;
-    font-size: 0.85em;
-    font-weight: 600;
-    color: white;
-    display: inline-block;
-    margin-bottom: 1rem;
-}
-.urgencia-tag.urgente { background: #dc3545; }
-.urgencia-tag.pode-esperar { background: #fd7e14; }
-.urgencia-tag.daqui-a-uma-semana { background: #6c757d; }
-
-
-/* ===== Formulários Limpos e Claros ===== */
-.form-label {
-    font-weight: 600;
-    margin-bottom: 0.5rem;
-}
-.form-control, .form-select {
-    background-color: var(--card-background);
-    border: 1px solid var(--border-color);
-    border-radius: 12px;
-    padding: 1rem;
-    color: var(--text-color-primary);
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
-}
-.form-control:focus, .form-select:focus {
-    border-color: var(--primary-green);
-    box-shadow: 0 0 0 0.25rem rgba(40, 167, 69, 0.15);
-    background-color: var(--card-background);
-}
-.btn-success {
-    background: var(--primary-green) !important;
-    border: none !important;
-    padding: 1rem;
-    border-radius: 12px;
-    font-weight: 600;
-    transition: all 0.3s ease;
-}
-.btn-success:hover {
-    background: var(--dark-green) !important;
-}
-
-
-/* ===== Outros Ajustes ===== */
-.no-pedidos {
-    text-align: center;
-    color: var(--text-color-secondary);
-    padding: 40px;
-    width: 100%;
-}
-.pedido-icon { 
-    display: none; 
-}
-
-/* ======================================================= */
-/* ESTILOS PARA LISTA/DETALHES E AVATAR                    */
-/* ======================================================= */
-.pedido-link {
-    text-decoration: none;
-    color: inherit;
-    display: block;
-}
-.pedido-link:hover {
-    color: inherit;
-}
-.ver-mais {
-    color: var(--primary-green);
-    font-weight: 600;
-    margin-top: auto;
-    padding-top: 1rem;
-    align-self: flex-start;
-}
-.detalhe-container {
-    background-color: var(--card-background);
-    border-radius: var(--border-radius);
-    padding: 2.5rem;
-    border: 1px solid var(--border-color);
-    box-shadow: var(--shadow-soft);
-}
-.detalhe-header h1 {
-    font-size: 2.5rem;
-    font-weight: 700;
-    margin-top: 1rem;
-    color: var(--text-color-primary);
-}
-.detalhe-meta {
-    font-size: 0.9rem;
-    color: var(--text-color-secondary);
-    margin-bottom: 1.5rem;
-}
-.detalhe-body {
-    padding: 1.5rem 0;
-}
-.detalhe-descricao {
-    font-size: 1.1rem;
-    line-height: 1.8;
-}
-.detalhe-footer {
-    text-align: center;
-    margin-top: 2rem;
-}
-
-/* NOVOS ESTILOS PARA O AVATAR E NOME DO AUTOR */
-.pedido-autor {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin-bottom: 1.5rem;
-    padding-bottom: 1.5rem;
     border-bottom: 1px solid var(--border-color);
+    box-shadow: var(--shadow-sm);
+    padding: 1rem;
 }
-.autor-avatar {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background-color: var(--background-color);
-    border: 2px solid white;
-    box-shadow: 0 0 0 2px var(--primary-green);
-}
-.autor-nome {
-    font-weight: 600;
-    color: var(--text-color-primary);
-}
+.navbar-brand { color: var(--text-primary) !important; font-weight: 700; font-size: 1.5em; display: flex; align-items: center; gap: 0.5rem; }
+.nav-link { color: var(--text-secondary) !important; font-weight: 500; transition: var(--transition); border-radius: var(--radius-md); padding: 0.5rem 1rem !important; }
+.nav-link:hover { color: var(--text-primary) !important; background-color: var(--background-color); }
+.navbar-brand i, .nav-link i { vertical-align: middle; }
+
+/* ===== CARD DE PEDIDO (Lista Principal) ===== */
+.pedido-link { text-decoration: none; color: inherit; display: block; }
+.pedido-link:hover .pedido { transform: translateY(-4px); box-shadow: var(--shadow-md); border-color: var(--primary-color); }
+.pedido { background: var(--card-background); border-radius: var(--radius-lg); padding: 1.5rem; margin-bottom: 1.5rem; border: 1px solid var(--border-color); box-shadow: var(--shadow-sm); transition: var(--transition); overflow: hidden; }
+.pedido-autor { display: flex; align-items: center; gap: 0.75rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border-color); margin-bottom: 1rem; }
+.autor-avatar { width: 36px; height: 36px; border-radius: 50%; }
+.autor-nome { font-weight: 600; font-size: 0.9rem; }
+.pedido h3 { font-size: 1.25rem; margin-top: 0; margin-bottom: 0.5rem; }
+.pedido p { color: var(--text-secondary); }
+.pedido-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 1.5rem; margin-top: auto; padding-top: 1rem; font-size: 0.875rem; color: var(--text-secondary); }
+.pedido-meta span { display: flex; align-items: center; gap: 0.4rem; }
+.pedido-meta i { color: var(--text-secondary); }
+
+/* ===== FILTROS (Corrigido) ===== */
+.filter-form .form-label { font-weight: 500; color: var(--text-primary); margin-bottom: 0.5rem; font-size: 0.9rem; }
+.filter-form .form-control, .filter-form .form-select { height: 48px; padding: 0 1rem; border-radius: var(--radius-md); border: 1px solid var(--border-color); background-color: var(--card-background); font-weight: 500; }
+.filter-form .form-control:focus, .filter-form .form-select:focus { border-color: var(--primary-color); box-shadow: 0 0 0 3px var(--primary-light); }
+.filter-form .btn { height: 48px; }
+
+/* ===== Formulários de Cadastro/Edição ===== */
+.form-floating > .form-control, .form-floating > .form-select { height: calc(3.5rem + 2px); line-height: 1.25; }
+.form-floating > label { padding: 1rem 1rem; }
+
+/* ===== Botões ===== */
+.btn { border-radius: var(--radius-md); font-weight: 600; padding: 0.75rem 1.5rem; transition: var(--transition); border: none; display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; }
+.btn-success, .ajudar-btn { background-color: var(--primary-color) !important; color: white !important; }
+.btn-success:hover, .ajudar-btn:hover { background-color: var(--primary-dark) !important; transform: translateY(-2px); box-shadow: var(--shadow-md); }
+.btn-danger { background-color: var(--danger-color) !important; color: white !important; }
+.btn-danger:hover { background-color: #B91C1C !important; transform: translateY(-2px); box-shadow: var(--shadow-md); }
+
+/* ===== DASHBOARD CARDS (Redesenhado) ===== */
+.stat-card { background-color: var(--card-background); border-radius: var(--radius-lg); border: 1px solid var(--border-color); box-shadow: var(--shadow-sm); padding: 1.5rem; text-align: center; transition: var(--transition); }
+.stat-card:hover { transform: translateY(-5px); box-shadow: var(--shadow-md); }
+.stat-card-icon { width: 56px; height: 56px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem auto; font-size: 1.5rem; color: white; }
+.stat-card-title { font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 0.25rem; font-weight: 500; }
+.stat-card-number { font-size: 2.25rem; font-weight: 700; color: var(--text-primary); margin: 0; }
+
+/* ===== TAGS DE URGÊNCIA (Com Cores) ===== */
+.tag-urgencia { padding: 5px 12px; border-radius: 50px; font-size: 0.8em; font-weight: 600; color: white; display: inline-block; }
+.tag-urgencia.urgente { background: var(--danger-color); }
+.tag-urgencia.pode-esperar { background: var(--warning-color); }
+.tag-urgencia.daqui-a-uma-semana { background: var(--neutral-color); }
+
+/* ===== PÁGINA DE DETALHES ===== */
+.detalhe-container { background-color: var(--card-background); border-radius: var(--radius-lg); padding: 2.5rem; border: 1px solid var(--border-color); box-shadow: var(--shadow-sm); }
+.detalhe-header h1 { font-size: 2.25rem; margin-top: 1rem; }
+.detalhe-meta { font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 1.5rem; }
+.detalhe-descricao { font-size: 1.1rem; line-height: 1.8; color: var(--text-secondary); }
+.detalhe-footer { text-align: center; margin-top: 2rem; }
+.ajudar-btn { width: auto; }

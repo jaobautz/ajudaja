@@ -1,79 +1,136 @@
-# AjudaJá - Plataforma de Ajuda Comunitária
+AjudaJá - Plataforma de Ajuda Comunitária
+Uma aplicação web moderna desenvolvida em PHP e PostgreSQL, projetada para conectar pessoas que precisam de ajuda com voluntários da comunidade. A plataforma tem como objetivo fomentar o apoio mútuo, permitindo que usuários cadastrados criem, gerenciem e interajam com pedidos de ajuda de forma organizada, segura e acessível.
 
-[![Status do Projeto](https://img.shields.io/badge/status-em%20desenvolvimento-brightgreen)](https://github.com/SEU_USUARIO/ajudaja)
+✨ Funcionalidades Principais
+👤 Autenticação Completa: Sistema seguro de Login e Cadastro de usuários, com senhas criptografadas (password_hash) e gerenciamento de sessão.
 
-Uma aplicação web desenvolvida em PHP para conectar pessoas que precisam de ajuda com voluntários da comunidade. A plataforma permite que usuários cadastrados criem, gerenciem e visualizem pedidos de ajuda de forma organizada e acessível.
+📝 CRUD Completo de Pedidos: Usuários logados podem Criar, Ler, Atualizar (Editar) e Excluir seus próprios pedidos de ajuda.
 
----
+📊 Dashboard Interativo: Painel de controle privado para cada usuário, com:
 
-### ✨ Funcionalidades Principais
+Estatísticas visuais sobre seus pedidos (Total, Abertos, Urgentes, Concluídos).
 
-* **👤 Autenticação de Usuários:** Sistema completo de Login e Cadastro de usuários, com senhas criptografadas para segurança.
-* **🖼️ Avatares Dinâmicos:** Geração automática de avatares com as iniciais dos usuários, adicionando um toque pessoal a cada pedido.
-* **📝 Criação e Gestão de Pedidos:** Usuários logados podem criar pedidos de ajuda detalhados, classificando-os por categoria e nível de urgência.
-* **📊 Dashboard Pessoal:** Cada usuário tem um painel de controle privado para visualizar estatísticas e gerenciar *apenas os seus próprios* pedidos.
-* **📄 Arquitetura Lista/Detalhes:** A página inicial exibe um resumo dos pedidos para uma navegação rápida. Ao clicar, o usuário é levado a uma página com todos os detalhes daquela solicitação.
-* **🔍 Filtros e Busca:** Ferramentas na página inicial para filtrar os pedidos por termo de busca ou nível de urgência.
-* **📱 Contato via WhatsApp:** Integração direta com o WhatsApp para facilitar o contato entre quem ajuda e quem precisa de ajuda.
+Gráficos dinâmicos de distribuição por Categoria e Urgência.
 
----
+Gerenciamento completo de todos os seus pedidos.
 
-### 🚀 Tecnologias Utilizadas
+💬 Sistema de Comentários: Seção de discussão em cada pedido para que a comunidade possa fazer perguntas, tirar dúvidas e oferecer apoio.
 
-* **Backend:** PHP
-* **Frontend:** HTML5, CSS3, JavaScript, Bootstrap 5
-* **Banco de Dados:** MySQL
-* **Serviços/APIs:**
-    * **DiceBear:** Para a geração automática de avatares.
-    * **Chart.js:** Para a criação dos gráficos no dashboard.
+🔍 Filtros e Busca Avançada: Ferramentas na página inicial para filtrar pedidos por termo de busca, categoria e nível de urgência.
 
----
+📱 Contato via WhatsApp: Botão de contato direto em cada pedido para facilitar a comunicação segura e imediata entre o voluntário e o solicitante.
 
-### ⚙️ Como Instalar e Executar o Projeto
+🖼️ Avatares Dinâmicos: Geração automática de avatares com as iniciais dos usuários (via DiceBear API) para personalizar a identificação visual.
 
-**Pré-requisitos:**
-* Um ambiente de servidor local (XAMPP, WAMP, etc.)
-* Git instalado na sua máquina.
+🎨 Design Moderno e Responsivo: Interface limpa e profissional, construída com Bootstrap 5 e um design system próprio, garantindo uma ótima experiência em desktops e dispositivos móveis.
 
-**Passos:**
+🚀 Tecnologias Utilizadas
+Backend: PHP 8+
 
-1.  **Clone o repositório:**
-    ```bash
-    git clone [https://github.com/SEU_USUARIO/ajudaja.git](https://github.com/SEU_USUARIO/ajudaja.git)
-    ```
+Frontend: HTML5, CSS3, JavaScript (ES6+)
 
-2.  **Configure o Banco de Dados:**
-    * Crie um banco de dados no seu MySQL chamado `ajudaja`.
-    * Importe o arquivo `ajudaja.sql` para dentro deste banco de dados. Ele criará todas as tabelas e adicionará dados de exemplo.
+Banco de Dados: PostgreSQL 14+
 
-3.  **Inicie o Servidor:**
-    * Coloque a pasta do projeto (`ajudaja`) dentro do diretório do seu servidor web (ex: `htdocs` no XAMPP).
-    * Inicie os módulos Apache e MySQL do seu servidor.
+Frameworks / Bibliotecas:
 
-4.  **Acesse a Aplicação:**
-    * Abra seu navegador e acesse: `http://localhost/ajudajaa/pages/index.php`
+Bootstrap 5
 
----
+Chart.js (para gráficos)
 
-### 🗂️ Estrutura de Arquivos Principal
+Lucide Icons (para iconografia)
 
-/ajudajaa
+Serviços/APIs:
+
+DiceBear (para geração de avatares)
+
+Google Fonts (fonte 'Inter')
+
+⚙️ Como Instalar e Executar o Projeto
+Pré-requisitos:
+
+Um ambiente de servidor local com PHP e PostgreSQL (ex: XAMPP com PostgreSQL, Laragon, Docker, etc.).
+
+Uma ferramenta de gerenciamento de banco de dados para PostgreSQL (ex: pgAdmin).
+
+Git instalado (opcional, para clonar o repositório).
+
+Passos:
+
+Obtenha os Arquivos do Projeto:
+
+Abra seu terminal, navegue até o diretório onde deseja salvar o projeto e clone o repositório:
+
+Bash
+
+git clone https://github.com/SEU_USUARIO/ajudaja.git
+Alternativa: Baixe o projeto como um arquivo .zip e extraia-o.
+
+Configure o Banco de Dados:
+
+Abra o pgAdmin (ou sua ferramenta de preferência).
+
+Crie um novo banco de dados vazio e nomeie-o como ajudaja.
+
+Abra a "Query Tool" (Ferramenta de Consulta) para o banco ajudaja.
+
+Copie todo o conteúdo do arquivo ajudaja.sql do projeto.
+
+Cole o conteúdo na Query Tool e execute o script. Isso criará todas as tabelas e inserirá os dados de exemplo.
+
+Configure a Conexão PHP:
+
+Navegue até a pasta includes/ e abra o arquivo config.php.
+
+Localize as variáveis de conexão e preencha com suas credenciais do PostgreSQL (principalmente a $password).
+
+PHP
+
+$host = "localhost";
+$port = "5432";
+$dbname = "ajudaja";
+$user = "postgres";
+$password = "sua_senha_aqui"; // <-- ALTERE AQUI
+Execute o Projeto:
+
+Mova a pasta inteira do projeto (ajudaja) para o diretório raiz do seu servidor web (geralmente htdocs no XAMPP ou www no Laragon).
+
+Certifique-se de que os serviços Apache e PostgreSQL estejam em execução.
+
+Abra seu navegador e acesse o endereço:
+
+http://localhost/ajudaja/pages/index.php
+🗂️ Estrutura de Arquivos Completa
+/ajudaja/
+│
 ├── css/
-│   └── style.css
+│   └── style.css               # Folha de estilo principal (Design System)
+│
 ├── includes/
-│   ├── config.php
-│   ├── lista_pedidos.php
-│   ├── processa_login.php
-│   ├── processa_registro.php
-│   └── ...
+│   ├── autenticacao.php        # Verifica se o usuário está logado
+│   ├── atualizar_status.php    # Atualiza o status de um pedido (AJAX)
+│   ├── config.php              # Configuração da conexão com o banco (PostgreSQL)
+│   ├── excluir_pedido.php      # Processa a exclusão de um pedido
+│   ├── footer.php              # Rodapé padrão das páginas
+│   ├── header.php              # Cabeçalho padrão e menu de navegação
+│   ├── lista_pedidos.php       # Lógica para buscar e exibir a lista de pedidos na home
+│   ├── logout.php              # Finaliza a sessão do usuário
+│   ├── processa_comentario.php # Salva um novo comentário no banco
+│   ├── processa_edicao.php     # Salva as alterações de um pedido editado
+│   ├── processa_login.php      # Valida os dados de login do usuário
+│   ├── processa_registro.php   # Cadastra um novo usuário
+│   └── salvar_pedido.php       # Salva um novo pedido no banco
+│
 ├── js/
-│   └── script.js
+│   └── script.js               # Scripts do lado do cliente (AJAX, Gráficos, etc.)
+│
 ├── pages/
-│   ├── index.php           # Página inicial (lista)
-│   ├── cadastrar.php
-│   ├── dashboard.php
-│   ├── login.php
-│   ├── registrar.php
-│   └── pedido_detalhe.php  # Página de detalhes
-├── ajudaja.sql
-└── README.md
+│   ├── cadastrar.php           # Formulário para criar um novo pedido
+│   ├── dashboard.php           # Painel de controle do usuário com estatísticas e gráficos
+│   ├── editar_pedido.php       # Formulário para editar um pedido existente
+│   ├── index.php               # Página inicial e listagem de todos os pedidos
+│   ├── login.php               # Formulário de login
+│   ├── pedido_detalhe.php      # Exibe os detalhes de um pedido e os comentários
+│   └── registrar.php           # Formulário de cadastro de novos usuários
+│
+├── ajudaja.sql                 # Script do banco de dados (PostgreSQL)
+└── README.md                   # Manual de instruções e documentação do projeto

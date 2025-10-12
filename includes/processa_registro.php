@@ -12,41 +12,32 @@ if (empty($nome) || empty($email) || empty($senha)) {
     exit;
 }
 
-if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-    $_SESSION['erro'] = "Formato de email inválido.";
-    header('Location: ../pages/registrar.php');
-    exit;
-}
-
 // Verifica se o email já existe
-$sql = "SELECT id FROM usuarios WHERE email = ?";
-$stmt = $conn->prepare($sql);
-$stmt->bind_param("s", $email);
-$stmt->execute();
-$stmt->store_result();
+$sql_check = "SELECT id FROM usuarios WHERE email = $1";
+pg_prepare($conn, "check_email", $sql_check);
+$result_check = pg_execute($conn, "check_email", array($email));
 
-if ($stmt->num_rows > 0) {
+if ($result_check && pg_num_rows($result_check) > 0) {
     $_SESSION['erro'] = "Este email já está cadastrado.";
     header('Location: ../pages/registrar.php');
     exit;
 }
-$stmt->close();
 
 // Criptografa a senha
 $senha_hash = password_hash($senha, PASSWORD_DEFAULT);
 
-// Insere o novo usuário no banco de dados
-$sql = "INSERT INTO usuarios (nome, email, senha) VALUES (?, ?, ?)";
-$stmt = $conn->prepare($sql);
-$stmt->bind_param("sss", $nome, $email, $senha_hash);
+// Insere o novo usuário
+$sql_insert = "INSERT INTO usuarios (nome, email, senha) VALUES ($1, $2, $3)";
+pg_prepare($conn, "insert_user", $sql_insert);
+$result_insert = pg_execute($conn, "insert_user", array($nome, $email, $senha_hash));
 
-if ($stmt->execute()) {
+if ($result_insert) {
     $_SESSION['sucesso'] = "Cadastro realizado com sucesso! Faça o login.";
     header('Location: ../pages/login.php');
 } else {
     $_SESSION['erro'] = "Erro ao cadastrar. Tente novamente.";
     header('Location: ../pages/registrar.php');
 }
-$stmt->close();
-$conn->close();
+
+pg_close($conn);
 ?>
