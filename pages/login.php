@@ -1,4 +1,4 @@
-<?php session_start(); ?>
+<?php include_once '../includes/session.php'; // Alterado de session_start() ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>

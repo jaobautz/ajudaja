@@ -5,28 +5,38 @@ function abrirWhatsapp(numero, titulo) {
 }
 
 // Função para marcar como concluído (via AJAX)
-// O parâmetro 'isDashboard' ajuda a saber qual elemento remover da tela
-function marcarConcluido(id, isDashboard = false) {
+function marcarConcluido(id) {
     if (!confirm('Tem certeza que deseja marcar este pedido como concluído?')) return;
+
+    // TAREFA 2: Obter o token CSRF da tag meta no <head>
+    const token = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
     fetch('../includes/atualizar_status.php', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
         },
-        body: `id=${id}&status=Concluído`
+        // TAREFA 2: Enviar o ID, o status E o token CSRF
+        body: `id=${id}&status=Concluído&csrf_token=${token}`
     })
     .then(response => response.text())
     .then(data => {
         if (data.includes('atualizado')) {
             alert('Pedido marcado como concluído!');
-            // Remove o card da tela sem recarregar a página
-            const prefix = isDashboard ? 'pedido-dash-' : 'pedido-';
-            const elementoPedido = document.getElementById(prefix + id);
+            // Atualiza a interface sem recarregar
+            const elementoPedido = document.getElementById('pedido-dash-' + id);
             if (elementoPedido) {
-                elementoPedido.style.transition = 'opacity 0.5s';
-                elementoPedido.style.opacity = '0';
-                setTimeout(() => elementoPedido.remove(), 500);
+                elementoPedido.classList.add('opacity-50');
+                const badge = elementoPedido.querySelector('.badge');
+                if (badge) {
+                    badge.classList.remove('bg-success');
+                    badge.classList.add('bg-secondary');
+                    badge.textContent = 'Concluído';
+                }
+                const botaoConcluir = elementoPedido.querySelector('.btn-success');
+                if (botaoConcluir) {
+                    botaoConcluir.remove();
+                }
             }
         } else {
             alert('Erro ao atualizar o status: ' + data);
@@ -42,9 +52,9 @@ function marcarConcluido(id, isDashboard = false) {
 // Inicializa os scripts quando o conteúdo da página for carregado
 document.addEventListener('DOMContentLoaded', function() {
     
-    // Gráficos na Dashboard (agora com dados reais vindos do PHP)
+    // Gráficos na Dashboard
     const graficoCatEl = document.getElementById('grafico-categoria');
-    if (graficoCatEl && typeof dadosCategoria !== 'undefined') {
+    if (graficoCatEl && typeof dadosCategoria !== 'undefined' && dadosCategoria.data.length > 0) {
         const ctxCat = graficoCatEl.getContext('2d');
         new Chart(ctxCat, {
             type: 'pie',
@@ -52,7 +62,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 labels: dadosCategoria.labels,
                 datasets: [{
                     data: dadosCategoria.data,
-                    backgroundColor: ['#4CAF50', '#2196F3', '#FF9800', '#9E9E9E', '#f44336', '#673AB7'],
+                    backgroundColor: ['#10B981', '#3B82F6', '#F59E0B', '#6B7280', '#EF4444', '#6366F1'],
                     hoverOffset: 4
                 }]
             },
@@ -68,7 +78,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     const graficoUrgEl = document.getElementById('grafico-urgencia');
-    if (graficoUrgEl && typeof dadosUrgencia !== 'undefined') {
+    if (graficoUrgEl && typeof dadosUrgencia !== 'undefined' && dadosUrgencia.data.length > 0) {
         const ctxUrg = graficoUrgEl.getContext('2d');
         new Chart(ctxUrg, {
             type: 'doughnut',
@@ -76,7 +86,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 labels: dadosUrgencia.labels,
                 datasets: [{
                     data: dadosUrgencia.data,
-                    backgroundColor: ['#f44336', '#ff9800', '#9e9e9e'],
+                    backgroundColor: ['#EF4444', '#F59E0B', '#6B7280'],
                     hoverOffset: 4
                 }]
             },

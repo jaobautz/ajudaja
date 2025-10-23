@@ -1,18 +1,24 @@
 <?php
-session_start();
+include_once 'session.php'; // Alterado de session_start()
 include 'config.php';
-// Não precisa do autenticacao.php aqui pois a query já checa o usuario_id da sessão
+
+// TAREFA 2: Validar o token CSRF
+validar_post_request();
 
 if (isset($_SESSION['usuario_id']) && isset($_POST['id']) && isset($_POST['status'])) {
     $id = intval($_POST['id']);
     $status = $_POST['status'];
     $usuario_id = $_SESSION['usuario_id'];
     
+    // Valida o status para aceitar apenas valores permitidos
+    if ($status !== 'Aberto' && $status !== 'Concluído') {
+        echo "Erro: Status inválido.";
+        exit;
+    }
+    
     $sql = "UPDATE pedidos SET status = $1 WHERE id = $2 AND usuario_id = $3";
     
-    // Prepara a query uma única vez
     if (!pg_prepare($conn, "update_status", $sql)) {
-        // Lida com o erro se a preparação falhar
         echo "Erro na preparação da query: " . pg_last_error($conn);
         exit;
     }

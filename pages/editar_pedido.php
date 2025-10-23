@@ -1,7 +1,10 @@
 <?php
-session_start();
+include_once '../includes/session.php'; // Alterado de session_start()
 include '../includes/config.php';
 include '../includes/autenticacao.php'; // Protege a página
+
+// Gera o token CSRF para o formulário
+gerar_token_csrf();
 
 // Pega o ID do pedido da URL e valida
 $pedido_id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
@@ -14,11 +17,9 @@ if (!$pedido_id) {
     exit;
 }
 
-// ESTE BLOCO FOI CORRIGIDO PARA USAR AS FUNÇÕES DO POSTGRESQL
 $sql = "SELECT * FROM pedidos WHERE id = $1 AND usuario_id = $2";
 
 if (!@pg_prepare($conn, "get_pedido_for_edit", $sql)) {
-    // Se a preparação falhar, redireciona com erro
     $_SESSION['erro'] = "Erro ao preparar a consulta: " . pg_last_error($conn);
     header('Location: dashboard.php');
     exit;
@@ -27,14 +28,12 @@ if (!@pg_prepare($conn, "get_pedido_for_edit", $sql)) {
 $result = pg_execute($conn, "get_pedido_for_edit", array($pedido_id, $_SESSION['usuario_id']));
 
 if (!$result || pg_num_rows($result) !== 1) {
-    // Se o pedido não existe ou não pertence ao usuário, nega o acesso
     $_SESSION['erro'] = "Você não tem permissão para editar este pedido ou o pedido não existe.";
     header('Location: dashboard.php');
     exit;
 }
 
 $pedido = pg_fetch_assoc($result);
-// A conexão não será fechada aqui para o restante da página poder ser renderizada
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -42,18 +41,14 @@ $pedido = pg_fetch_assoc($result);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Editar Pedido - AjudaJá</title>
-    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="../css/style.css">
 </head>
 <body>
     <header class="header">
-        <nav class="navbar navbar-expand-lg navbar-dark bg-success">
+        <nav class="navbar navbar-expand-lg">
             <div class="container">
-                 <a class="navbar-brand" href="dashboard.php"><i class="fas fa-arrow-left"></i> Voltar para o Dashboard</a>
-                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
+                 <a class="navbar-brand" href="dashboard.php"><i data-lucide="arrow-left"></i> Voltar</a>
                  <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="navbar-nav ms-auto">
                         <li class="nav-item"><a class="nav-link" href="../includes/logout.php">Sair</a></li>
@@ -64,13 +59,16 @@ $pedido = pg_fetch_assoc($result);
     </header>
 
     <main class="container my-4">
-        <h2 class="mb-4"><i class="fas fa-edit"></i> Editar Pedido de Ajuda</h2>
+        <h2 class="mb-4"><i data-lucide="edit"></i> Editar Pedido de Ajuda</h2>
 
         <?php if (isset($_SESSION['erro'])): ?>
             <div class="alert alert-danger"><?php echo $_SESSION['erro']; unset($_SESSION['erro']); ?></div>
         <?php endif; ?>
 
         <form action="../includes/processa_edicao.php" method="POST" id="form-edicao" class="row g-3">
+            
+            <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
+            
             <input type="hidden" name="pedido_id" value="<?php echo $pedido['id']; ?>">
 
             <div class="col-md-12">
@@ -102,12 +100,14 @@ $pedido = pg_fetch_assoc($result);
             </div>
             <div class="col-12">
                 <button type="submit" class="btn btn-success w-100">
-                    <i class="fas fa-save"></i> Salvar Alterações
+                    <i data-lucide="save"></i> Salvar Alterações
                 </button>
             </div>
         </form>
     </main>
     <?php if ($conn) { pg_close($conn); } ?>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script> lucide.createIcons(); </script>
 </body>
 </html>

@@ -1,7 +1,7 @@
 <?php
 $page_title = 'Detalhes do Pedido - AjudaJá';
 include '../includes/config.php';
-include '../includes/header.php';
+include '../includes/header.php'; // session.php e token são incluídos aqui
 
 $pedido_id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
 $erro = null;
@@ -78,6 +78,9 @@ if (!$pedido_id) {
                 <?php if (isset($_SESSION['usuario_id'])): ?>
                 <div class="card p-3 mb-4 bg-light border-0">
                     <form action="../includes/processa_comentario.php" method="POST" class="form-comentario">
+                        
+                        <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
+                        
                         <input type="hidden" name="pedido_id" value="<?php echo $pedido['id']; ?>">
                         <div class="mb-3">
                             <textarea class="form-control" name="comentario" rows="3" placeholder="Deixe sua pergunta ou mensagem de apoio..." required></textarea>

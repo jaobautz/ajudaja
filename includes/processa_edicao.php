@@ -1,10 +1,13 @@
 <?php
-session_start();
-include 'config.php';
+include_once 'session.php';
+include 'config.php'; // Já inclui a BASE_URL
 include 'autenticacao.php';
 
+validar_post_request();
+
 if ($_SERVER["REQUEST_METHOD"] != "POST") {
-    header('Location: ../pages/dashboard.php');
+    // --- CORREÇÃO DO REDIRECIONAMENTO ---
+    header('Location: ' . BASE_URL . '/pages/dashboard.php');
     exit;
 }
 
@@ -15,10 +18,11 @@ $urgencia = $_POST['urgencia'] ?? '';
 $categoria = $_POST['categoria'] ?? '';
 $usuario_id = $_SESSION['usuario_id'];
 
-// Validações (exemplo simples)
+// (Falta a validação robusta aqui, podemos adicionar depois)
 if (!$pedido_id || empty($titulo) || empty($descricao)) {
     $_SESSION['erro'] = "Todos os campos são obrigatórios.";
-    header("Location: ../pages/editar_pedido.php?id=$pedido_id");
+    // --- CORREÇÃO DO REDIRECIONAMENTO ---
+    header("Location: " . BASE_URL . "/pages/editar_pedido.php?id=$pedido_id");
     exit;
 }
 
@@ -37,11 +41,12 @@ if ($result) {
     if (pg_affected_rows($result) > 0) {
         $_SESSION['sucesso'] = 'Pedido atualizado com sucesso!';
     }
-    // Redireciona mesmo se nada mudou para o usuário ver o resultado
-    header("Location: ../pages/pedido_detalhe.php?id=$pedido_id");
+    // --- CORREÇÃO DO REDIRECIONAMENTO ---
+    header("Location: " . BASE_URL . "/pages/pedido_detalhe.php?id=$pedido_id");
 } else {
     $_SESSION['erro'] = 'Erro ao executar a atualização: ' . pg_last_error($conn);
-    header("Location: ../pages/editar_pedido.php?id=$pedido_id");
+    // --- CORREÇÃO DO REDIRECIONAMENTO ---
+    header("Location: " . BASE_URL . "/pages/editar_pedido.php?id=$pedido_id");
 }
 
 pg_close($conn);

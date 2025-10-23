@@ -1,10 +1,13 @@
 <?php
-session_start();
-include 'config.php';
+include_once 'session.php';
+include 'config.php'; // Já inclui a BASE_URL
 include 'autenticacao.php';
 
+validar_post_request();
+
 if ($_SERVER["REQUEST_METHOD"] != "POST") {
-    header('Location: ../pages/dashboard.php');
+    // --- CORREÇÃO DO REDIRECIONAMENTO ---
+    header('Location: ' . BASE_URL . '/pages/dashboard.php');
     exit;
 }
 
@@ -13,7 +16,8 @@ $usuario_id = $_SESSION['usuario_id'];
 
 if (!$pedido_id) {
     $_SESSION['erro'] = "ID de pedido inválido.";
-    header('Location: ../pages/dashboard.php');
+    // --- CORREÇÃO DO REDIRECIONAMENTO ---
+    header('Location: ' . BASE_URL . '/pages/dashboard.php');
     exit;
 }
 
@@ -32,6 +36,7 @@ if ($result) {
 }
 
 pg_close($conn);
-header('Location: ../pages/dashboard.php');
+// --- CORREÇÃO DO REDIRECIONAMENTO ---
+header('Location: ' . BASE_URL . '/pages/dashboard.php');
 exit;
 ?>

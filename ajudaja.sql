@@ -17,6 +17,7 @@ CREATE TABLE usuarios (
   nome VARCHAR(255) NOT NULL,
   email VARCHAR(255) NOT NULL UNIQUE,
   senha VARCHAR(255) NOT NULL,
+  telefone VARCHAR(20) NOT NULL, -- TAREFA 5: Adicionada coluna telefone
   data_cadastro TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -53,17 +54,17 @@ CREATE TABLE comentarios (
 
 --
 -- Inserindo dados na tabela `usuarios`
--- A senha para todos os usuários de exemplo é "senha123"
+-- TAREFA 5: Adicionado telefone aos dados de exemplo
 --
-INSERT INTO usuarios (id, nome, email, senha) VALUES
-(1, 'Maria Souza', 'maria.s@email.com', '$2y$10$T8hsL2s.aF8q.1J.H7B.Q.hZ1.dE9.U/5ztnjOaWp3vUq1XyY2W9K'),
-(2, 'João Pedro', 'joao.p@email.com', '$2y$10$T8hsL2s.aF8q.1J.H7B.Q.hZ1.dE9.U/5ztnjOaWp3vUq1XyY2W9K'),
-(3, 'Ana Clara', 'ana.c@email.com', '$2y$10$T8hsL2s.aF8q.1J.H7B.Q.hZ1.dE9.U/5ztnjOaWp3vUq1XyY2W9K'),
-(4, 'Lucas Ferreira', 'lucas.f@email.com', '$2y$10$T8hsL2s.aF8q.1J.H7B.Q.hZ1.dE9.U/5ztnjOaWp3vUq1XyY2W9K'),
-(5, 'Beatriz Lima', 'beatriz.l@email.com', '$2y$10$T8hsL2s.aF8q.1J.H7B.Q.hZ1.dE9.U/5ztnjOaWp3vUq1XyY2W9K'),
-(6, 'Carlos Mendes', 'carlos.m@email.com', '$2y$10$T8hsL2s.aF8q.1J.H7B.Q.hZ1.dE9.U/5ztnjOaWp3vUq1XyY2W9K'),
-(7, 'Juliana Costa', 'juliana.c@email.com', '$2y$10$T8hsL2s.aF8q.1J.H7B.Q.hZ1.dE9.U/5ztnjOaWp3vUq1XyY2W9K'),
-(8, 'Rafael Gomes', 'rafael.g@email.com', '$2y$10$T8hsL2s.aF8q.1J.H7B.Q.hZ1.dE9.U/5ztnjOaWp3vUq1XyY2W9K');
+INSERT INTO usuarios (id, nome, email, senha, telefone) VALUES
+(1, 'Maria Souza', 'maria.s@email.com', '$2y$10$T8hsL2s.aF8q.1J.H7B.Q.hZ1.dE9.U/5ztnjOaWp3vUq1XyY2W9K', '11988887777'),
+(2, 'João Pedro', 'joao.p@email.com', '$2y$10$T8hsL2s.aF8q.1J.H7B.Q.hZ1.dE9.U/5ztnjOaWp3vUq1XyY2W9K', '21977776666'),
+(3, 'Ana Clara', 'ana.c@email.com', '$2y$10$T8hsL2s.aF8q.1J.H7B.Q.hZ1.dE9.U/5ztnjOaWp3vUq1XyY2W9K', '31966665555'),
+(4, 'Lucas Ferreira', 'lucas.f@email.com', '$2y$10$T8hsL2s.aF8q.1J.H7B.Q.hZ1.dE9.U/5ztnjOaWp3vUq1XyY2W9K', '41955554444'),
+(5, 'Beatriz Lima', 'beatriz.l@email.com', '$2y$10$T8hsL2s.aF8q.1J.H7B.Q.hZ1.dE9.U/5ztnjOaWp3vUq1XyY2W9K', '51944443333'),
+(6, 'Carlos Mendes', 'carlos.m@email.com', '$2y$10$T8hsL2s.aF8q.1J.H7B.Q.hZ1.dE9.U/5ztnjOaWp3vUq1XyY2W9K', '61933332222'),
+(7, 'Juliana Costa', 'juliana.c@email.com', '$2y$10$T8hsL2s.aF8q.1J.H7B.Q.hZ1.dE9.U/5ztnjOaWp3vUq1XyY2W9K', '71922221111'),
+(8, 'Rafael Gomes', 'rafael.g@email.com', '$2y$10$T8hsL2s.aF8q.1J.H7B.Q.hZ1.dE9.U/5ztnjOaWp3vUq1XyY2W9K', '81911110000');
 
 
 --
@@ -78,7 +79,31 @@ INSERT INTO pedidos (id, usuario_id, titulo, descricao, urgencia, categoria, wha
 (6, 7, 'Preciso de um berço usado', 'Estou grávida e montando o enxoval do meu bebê. Se alguém tiver um berço em bom estado que não usa mais e puder doar, seria uma ajuda imensa.', 'Pode Esperar', 'Doação de Itens', '31966665555', 'Concluído', '2025-09-20 09:30:00'),
 (7, 8, 'Ajuda para consertar vazamento', 'Minha pia da cozinha está com um vazamento que não consigo consertar e não tenho como pagar um encanador agora. Alguém com conhecimento poderia me ajudar?', 'Urgente', 'Serviços Voluntários', '11988887777', 'Aberto', '2025-09-26 14:00:00');
 
--- Sincroniza os contadores de ID para evitar conflitos em futuras inserções
+-- ===================================================================
+-- TAREFA 3: CRIAÇÃO DE ÍNDICES PARA PERFORMANCE EM PRODUÇÃO
+-- ===================================================================
+
+-- Habilita a extensão pg_trgm para buscas de texto rápidas (ILIKE)
+CREATE EXTENSION IF NOT EXISTS pg_trgm;
+
+-- --- Índices para Chaves Estrangeiras (Foreign Keys) ---
+CREATE INDEX idx_pedidos_usuario_id ON pedidos(usuario_id);
+CREATE INDEX idx_comentarios_pedido_id ON comentarios(pedido_id);
+CREATE INDEX idx_comentarios_usuario_id ON comentarios(usuario_id);
+
+-- --- Índices para Filtros (WHERE clauses) ---
+CREATE INDEX idx_pedidos_status ON pedidos(status);
+CREATE INDEX idx_pedidos_urgencia ON pedidos(urgencia);
+CREATE INDEX idx_pedidos_categoria ON pedidos(categoria);
+
+-- --- Índice para Busca de Texto (ILIKE) ---
+CREATE INDEX idx_pedidos_busca_texto ON pedidos USING gin (titulo gin_trgm_ops, descricao gin_trgm_ops);
+
+
+-- --------------------------------------------------------
+-- SINCRONIZAÇÃO DOS CONTADORES DE ID (SEQUENCES)
+-- --------------------------------------------------------
+
 SELECT setval('usuarios_id_seq', (SELECT MAX(id) FROM usuarios));
 SELECT setval('pedidos_id_seq', (SELECT MAX(id) FROM pedidos));
-SELECT setval('comentarios_id_seq', (SELECT MAX(id) FROM comentarios), false); -- O 'false' significa que o próximo ID será o valor atual + 1
+SELECT setval('comentarios_id_seq', (SELECT MAX(id) FROM comentarios), false);
