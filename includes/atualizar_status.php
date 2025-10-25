@@ -1,5 +1,5 @@
 <?php
-include_once 'session.php'; // Alterado de session_start()
+require_once 'session.php'; // Alterado de session_start()
 include 'config.php';
 
 // TAREFA 2: Validar o token CSRF

@@ -1,5 +1,5 @@
 <?php
-include_once 'session.php';
+require_once 'session.php';
 include 'config.php'; // Já inclui a BASE_URL
 include 'autenticacao.php';
 

@@ -1,25 +1,20 @@
 <?php
 $page_title = 'Cadastrar Pedido - AjudaJá';
-include '../includes/autenticacao.php'; 
-include '../includes/header.php';
+require_once '../includes/config.php';       
+require_once '../includes/autenticacao.php'; 
+require_once '../includes/session.php';      
 
-// TAREFA 4: Recuperar erros de validação e dados antigos
+// Recuperar erros e dados antigos
 $erros = $_SESSION['erro_campos'] ?? [];
 $old_data = $_SESSION['old_data'] ?? [];
 unset($_SESSION['erro_campos'], $_SESSION['old_data']);
 
 // Funções auxiliares
-function exibir_erro($campo, $erros) {
-    if (isset($erros[$campo])) {
-        echo "<div class='invalid-feedback d-block'>{$erros[$campo]}</div>";
-    }
-}
-function old($campo, $old_data) {
-    return htmlspecialchars($old_data[$campo] ?? '');
-}
-function old_select($campo, $valor_opcao, $old_data) {
-    return (isset($old_data[$campo]) && $old_data[$campo] == $valor_opcao) ? 'selected' : '';
-}
+function exibir_erro($campo, $erros) { if (isset($erros[$campo])) { echo "<div class='invalid-feedback d-block'>{$erros[$campo]}</div>"; } }
+function old($campo, $old_data) { return htmlspecialchars($old_data[$campo] ?? ''); }
+function old_select($campo, $valor_opcao, $old_data) { return (isset($old_data[$campo]) && $old_data[$campo] == $valor_opcao) ? 'selected' : ''; }
+
+require_once '../includes/header.php'; 
 ?>
 
 <main class="container my-5">
@@ -29,14 +24,10 @@ function old_select($campo, $valor_opcao, $old_data) {
                 <h1 class="display-6 fw-bold">Novo Pedido de Ajuda</h1>
                 <p class="lead text-secondary">Descreva sua necessidade para que a comunidade possa ajudar.</p>
             </div>
-            
             <?php if (isset($_SESSION['erro'])) { echo "<div class='alert alert-danger'>" . $_SESSION['erro'] . "</div>"; unset($_SESSION['erro']); } ?>
-
             <div class="card p-4 p-md-5" style="border-radius: var(--radius-lg); box-shadow: var(--shadow-md);">
                 <form action="../includes/salvar_pedido.php" method="POST" id="form-cadastro" class="row g-4">
-                    
                     <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
-                    
                     <div class="col-md-12 form-floating">
                         <input type="text" class="form-control <?php echo isset($erros['titulo']) ? 'is-invalid' : ''; ?>" id="titulo" name="titulo" value="<?php echo old('titulo', $old_data); ?>" placeholder="Título do Pedido" required>
                         <label for="titulo">Título do Pedido (mínimo 5 caracteres)</label>
@@ -70,8 +61,14 @@ function old_select($campo, $valor_opcao, $old_data) {
                         <label for="categoria">Categoria</label>
                         <?php exibir_erro('categoria', $erros); ?>
                     </div>
-                    <div class="col-md-12 form-floating">
-                        <input type="tel" class="form-control <?php echo isset($erros['whatsapp']) ? 'is-invalid' : ''; ?>" id="whatsapp" name="whatsapp" value="<?php echo old('whatsapp', $old_data); ?>" placeholder="Seu Número de WhatsApp" pattern="\d{10,15}" required>
+                    <div class="col-md-6 form-floating">
+                        <input type="text" class="form-control <?php echo isset($erros['cep']) ? 'is-invalid' : ''; ?>" id="cep" name="cep" value="<?php echo old('cep', $old_data); ?>" placeholder="CEP (Opcional)" pattern="\d{5}-?\d{3}">
+                        <label for="cep">CEP (Opcional)</label>
+                        <div class="form-text">Informe o CEP para ajudar na localização (Ex: 01001-000).</div>
+                        <?php exibir_erro('cep', $erros); ?>
+                    </div>
+                    <div class="col-md-6 form-floating"> 
+                        <input type="tel" class="form-control <?php echo isset($erros['whatsapp']) ? 'is-invalid' : ''; ?>" id="whatsapp" name="whatsapp" value="<?php echo old('whatsapp', $old_data); ?>" placeholder="Seu Número de WhatsApp" pattern="\d{10,11}" required>
                         <label for="whatsapp">Seu Número de WhatsApp (10 ou 11 dígitos)</label>
                         <?php exibir_erro('whatsapp', $erros); ?>
                     </div>
@@ -84,4 +81,4 @@ function old_select($campo, $valor_opcao, $old_data) {
     </div>
 </main>
 
-<?php include '../includes/footer.php'; ?>
+<?php require_once '../includes/footer.php'; ?>

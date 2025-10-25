@@ -1,0 +1,72 @@
+<?php
+require_once 'session.php';
+include 'config.php';
+include 'autenticacao.php';
+require_once 'validacao.php';
+
+// Valida o token CSRF
+validar_post_request();
+
+if ($_SERVER["REQUEST_METHOD"] != "POST") {
+    header('Location: ' . BASE_URL . '/pages/perfil.php');
+    exit;
+}
+
+// Coleta os dados
+$usuario_id = $_SESSION['usuario_id'];
+$senha_atual = trim($_POST['senha_atual'] ?? '');
+$nova_senha = trim($_POST['nova_senha'] ?? '');
+$nova_senha_confirm = trim($_POST['nova_senha_confirm'] ?? '');
+
+// 1. Validação dos novos campos
+$erros = [];
+
+$erro_nova_senha = validar_campo($nova_senha, ['obrigatorio', 'min:8', 'senha_forte']);
+if ($erro_nova_senha) $erros['nova_senha'] = $erro_nova_senha;
+
+// Renomeia o campo no $_POST temporariamente para a validação 'confirma' funcionar
+$_POST['nova_senha_temp'] = $nova_senha;
+$erro_confirm = validar_campo($nova_senha_confirm, ['obrigatorio', 'confirma:nova_senha_temp']);
+if ($erro_confirm) $erros['nova_senha_confirm'] = $erro_confirm;
+
+if (!empty($erros)) {
+    $_SESSION['erro_campos_senha'] = $erros; // Usa uma session diferente para erros de senha
+    header('Location: ' . BASE_URL . '/pages/perfil.php');
+    exit;
+}
+
+// 2. Verificar a senha atual
+$sql_get_senha = "SELECT senha FROM usuarios WHERE id = $1";
+pg_prepare($conn, "get_senha_atual", $sql_get_senha);
+$result_senha = pg_execute($conn, "get_senha_atual", array($usuario_id));
+
+if (!$result_senha || pg_num_rows($result_senha) !== 1) {
+    $_SESSION['erro_senha'] = "Erro ao verificar sua conta. Por favor, deslogue e logue novamente.";
+    header('Location: ' . BASE_URL . '/pages/perfil.php');
+    exit;
+}
+
+$hash_senha_atual = pg_fetch_result($result_senha, 0, 'senha');
+
+if (!password_verify($senha_atual, $hash_senha_atual)) {
+    $_SESSION['erro_senha'] = "A senha atual está incorreta.";
+    header('Location: ' . BASE_URL . '/pages/perfil.php');
+    exit;
+}
+
+// 3. Tudo certo, atualizar a senha
+$nova_senha_hash = password_hash($nova_senha, PASSWORD_DEFAULT);
+$sql_update_senha = "UPDATE usuarios SET senha = $1 WHERE id = $2";
+pg_prepare($conn, "update_senha", $sql_update_senha);
+$result_update = pg_execute($conn, "update_senha", array($nova_senha_hash, $usuario_id));
+
+if ($result_update) {
+    $_SESSION['sucesso_senha'] = "Senha alterada com sucesso!";
+} else {
+    $_SESSION['erro_senha'] = "Ocorreu um erro ao alterar sua senha. Tente novamente.";
+}
+
+pg_close($conn);
+header('Location: ' . BASE_URL . '/pages/perfil.php');
+exit;
+?>

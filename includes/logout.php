@@ -1,6 +1,6 @@
 <?php
-include_once 'session.php';
-include_once 'config.php'; // Inclui o config para pegar a BASE_URL
+require_once 'session.php';
+require_once 'config.php'; // Inclui o config para pegar a BASE_URL
 
 session_unset();
 session_destroy();

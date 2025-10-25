@@ -48,7 +48,7 @@ function validar_campo($valor, $regras) {
                 break;
             
             case 'whatsapp':
-            case 'telefone': // --- TAREFA 5: Adicionada regra 'telefone' ---
+            case 'telefone': 
                 $numeros = preg_replace('/[^0-9]/', '', $valor);
                 if (mb_strlen($numeros) < 10 || mb_strlen($numeros) > 11) {
                     return 'O número deve ter entre 10 e 11 dígitos (com DDD).';
@@ -62,12 +62,23 @@ function validar_campo($valor, $regras) {
                 }
                 break;
 
-            case 'confirma': // --- TAREFA 5: Adicionada regra 'confirma' ---
-                // Compara o valor com outro campo (ex: 'confirma:senha')
-                // O 'parametro' é o *nome* do campo no array $_POST.
+            case 'confirma': 
                 $valor_comparar = trim($_POST[$parametro] ?? '');
                 if ($valor !== $valor_comparar) {
                     return "A confirmação não coincide com o campo original.";
+                }
+                break;
+            
+            case 'cep': // Regra adicionada para Geolocalização
+                $cep_limpo = preg_replace('/[^0-9]/', '', $valor);
+                if (!empty($cep_limpo) && (strlen($cep_limpo) !== 8 || !ctype_digit($cep_limpo))) {
+                     return 'O CEP deve estar no formato 00000-000 ou 00000000.';
+                }
+                break;
+
+            case 'senha_forte':
+                if (!preg_match('/^(?=.*[A-Za-z])(?=.*\d).+$/', $valor)) {
+                    return 'A senha deve conter pelo menos uma letra e um número.';
                 }
                 break;
         }

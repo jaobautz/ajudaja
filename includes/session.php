@@ -34,7 +34,7 @@ function validar_token_csrf($token) {
 function validar_post_request() {
     // Inclui a config SÓ SE precisar redirecionar
     if (!isset($_POST['csrf_token']) || !validar_token_csrf($_POST['csrf_token'])) {
-        include_once 'config.php'; // Inclui o config para pegar a BASE_URL
+        require_once 'config.php'; // Inclui o config para pegar a BASE_URL
         
         error_log("Falha na validação do token CSRF.");
         $_SESSION['erro'] = 'Ação inválida ou sua sessão expirou. Por favor, tente novamente.';
