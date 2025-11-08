@@ -1,5 +1,5 @@
 /* ======================================================= */
-/* AJUDAJÁ - TEMA PROFISSIONAL V10.2 (Polimento Final Home)*/
+/* AJUDAJÁ - TEMA PROFISSIONAL V10.3 (Microinterações)     */
 /* ======================================================= */
 
 /* ===== Importação da Fonte e Variáveis Globais ===== */
@@ -9,7 +9,7 @@
     /* Cores */
     --primary-color: #10B981;
     --primary-dark: #059669;
-    --primary-light: #D1FAE5; /* Verde bem claro, bom para fundos de botão */
+    --primary-light: #D1FAE5; 
     --text-primary: #1F2937;
     --text-secondary: #6B7280;
     --background-color: #F9FAFB;
@@ -21,19 +21,28 @@
     --neutral-color: #64748b;
     --success-color: var(--primary-color);
     --link-color: var(--primary-dark);
-
     /* Tipografia */
     --font-family: 'Inter', sans-serif;
-
     /* Sombras */
     --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
     --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
     --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-
     /* Bordas e Transições */
     --radius-md: 0.5rem;
     --radius-lg: 0.75rem;
     --transition: all 0.2s ease-in-out;
+}
+
+/* ===== Animações (Novo) ===== */
+@keyframes slideInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 /* ===== Estilos Base ===== */
@@ -74,12 +83,7 @@ hr { border-top-color: var(--border-light-color); opacity: 0.7; }
 /* ===== Hero Section ===== */
 .hero-section { background: linear-gradient(to right, var(--primary-dark), var(--primary-color)); color: white; padding: 4rem 1.5rem; margin-bottom: -2rem; position: relative; z-index: 1; }
 .hero-section h1 { font-size: 3rem; text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3); }
-.hero-section p.lead {
-    font-size: 1.25rem;
-    /* CORREÇÃO: Usar branco opaco para melhor leitura */
-    color: white;
-    margin-bottom: 2rem;
-}
+.hero-section p.lead { font-size: 1.25rem; color: white; margin-bottom: 2rem; }
 .hero-section .btn-light { background-color: rgba(255, 255, 255, 0.9); color: var(--primary-dark); font-weight: 600; padding: 0.8rem 2rem; box-shadow: var(--shadow-md); }
 .hero-section .btn-light:hover { background-color: white; transform: translateY(-2px) scale(1.03); }
 
@@ -96,13 +100,30 @@ hr { border-top-color: var(--border-light-color); opacity: 0.7; }
 .form-floating > .form-control, .form-floating > .form-select { height: calc(3.8rem + 2px); line-height: 1.5; padding-top: 1.8rem; }
 .form-floating > label { padding: 1.1rem 1.2rem; font-weight: 500; color: var(--text-secondary); }
 .form-text { font-size: 0.85rem; color: var(--text-secondary); }
-.invalid-feedback { font-weight: 500; }
+
+/* === POLIMENTO: Animação sutil para mensagens de erro === */
+.invalid-feedback.d-block {
+    animation: slideInDown 0.3s ease-out;
+}
+/* === FIM POLIMENTO === */
 .card form { margin-top: 1.5rem; }
 
 /* ===== Botões ===== */
 .btn { border-radius: var(--radius-md); font-weight: 600; padding: 0.8rem 1.6rem; transition: var(--transition); border: none; display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; box-shadow: var(--shadow-sm); }
 .btn i { width: 1.1em; height: 1.1em; }
 .btn:hover { transform: translateY(-2px) scale(1.03); box-shadow: var(--shadow-md); }
+
+/* === POLIMENTO: Feedback de clique e foco (Novo) === */
+.btn:focus-visible { /* Anel de foco acessível */
+    outline: 2px solid var(--primary-dark);
+    outline-offset: 2px;
+    box-shadow: 0 0 0 4px var(--primary-light);
+}
+.btn:active {
+    transform: translateY(0px) scale(0.98); 
+    box-shadow: var(--shadow-sm);
+}
+
 .btn-success, .ajudar-btn { background-color: var(--primary-color) !important; color: white !important; border: 1px solid var(--primary-color) !important; }
 .btn-success:hover, .ajudar-btn:hover { background-color: var(--primary-dark) !important; border-color: var(--primary-dark) !important; }
 .btn-danger { background-color: var(--danger-color) !important; color: white !important; border: 1px solid var(--danger-color) !important; }
@@ -170,20 +191,9 @@ hr { border-top-color: var(--border-light-color); opacity: 0.7; }
 .footer ul li { margin-bottom: 0.5rem; }
 .footer .copyright { text-align: center; margin-top: 3rem; padding-top: 2rem; border-top: 1px solid rgba(255, 255, 255, 0.2); font-size: 0.9rem; color: rgba(255, 255, 255, 0.5); }
 
-/* ===== Ajuste Botão Header (Novo Estilo) ===== */
-.header .navbar .btn-novo-pedido {
-    background-color: var(--primary-light); /* Fundo verde claro */
-    color: var(--primary-dark) !important; /* Texto verde escuro */
-    font-weight: 600;
-    padding: 0.4rem 0.9rem; /* Padding de botão pequeno */
-    border: 1px solid var(--primary-dark); /* Borda sutil */
-    box-shadow: var(--shadow-sm);
-}
-.header .navbar .btn-novo-pedido:hover {
-    background-color: var(--primary-color); /* Fica verde sólido no hover */
-    color: white !important; /* Texto branco no hover */
-    border-color: var(--primary-color);
-}
+/* ===== Ajuste Botão Header ===== */
+.header .navbar .btn-novo-pedido { background-color: var(--primary-light); color: var(--primary-dark) !important; font-weight: 600; padding: 0.4rem 0.9rem; border: 1px solid var(--primary-dark); box-shadow: var(--shadow-sm); }
+.header .navbar .btn-novo-pedido:hover { background-color: var(--primary-color); color: white !important; border-color: var(--primary-color); }
 /* Ajuste mobile */
 @media (max-width: 991.98px) {
     .header .navbar-nav .nav-item { margin-bottom: 0.5rem; }

@@ -1,4 +1,4 @@
-</div> <footer class="footer">
+<footer class="footer">
         <div class="container">
             <div class="row">
                 <div class="col-md-4 mb-4 mb-md-0">
@@ -37,12 +37,12 @@
           lucide.createIcons();
       }
     </script>
-
+    
     <?php if (isset($include_chartjs) && $include_chartjs): ?>
         <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <?php endif; ?>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/inputmask/5.0.8/jquery.inputmask.min.js" integrity="sha512-efAcjYoYT0sXxQRzAokQ5BFTfmWK8tnkxXUTwdVzJuTCmf9LnwAjsHmSY7XsVZfzcvjAJRQVL8IBQrGkL06gOA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script src="<?php echo BASE_URL; ?>/js/script.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/inputmask/5.0.8/inputmask.min.js" integrity="sha512-QexpKGW7L9MLD0N/o8dMh210gQfD/sOO0jDLRv051e/m7S/Mm8f8dJ5T9/A+13Vn8sB/wL5x/4vN+0i19MPSA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="<?php echo BASE_URL; ?>/js/script.js" defer></script> 
 </body>
 </html>
