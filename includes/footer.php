@@ -31,18 +31,9 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
-    <script>
-      // Garante que lucide exista antes de chamar
-      if (typeof lucide !== 'undefined') {
-          lucide.createIcons();
-      }
-    </script>
     
-    <?php if (isset($include_chartjs) && $include_chartjs): ?>
-        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <?php endif; ?>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/inputmask/5.0.8/inputmask.min.js" integrity="sha512-QexpKGW7L9MLD0N/o8dMh210gQfD/sOO0jDLRv051e/m7S/Mm8f8dJ5T9/A+13Vn8sB/wL5x/4vN+0i19MPSA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="<?php echo BASE_URL; ?>/js/lib/inputmask.min.js"></script>
+    
     <script src="<?php echo BASE_URL; ?>/js/script.js" defer></script> 
 </body>
 </html>

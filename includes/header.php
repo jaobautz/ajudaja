@@ -1,5 +1,5 @@
 <?php
-// Usamos require_once para garantir que session.php e config.php sejam carregados
+// Usamos require_once para garantir que config.php e session.php sejam carregados
 // apenas uma vez, na ordem correta.
 require_once 'config.php'; // Define BASE_URL primeiro
 require_once 'session.php'; // Inicia a sessão e funções CSRF
@@ -10,13 +10,17 @@ gerar_token_csrf();
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale-1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="<?php echo $_SESSION['csrf_token']; ?>">
     <title><?php echo $page_title ?? 'AjudaJá'; ?></title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     
     <link rel="stylesheet" href="<?php echo BASE_URL; ?>/css/style.css">
+
+    <?php if (isset($include_chartjs) && $include_chartjs): ?>
+        <script src="<?php echo BASE_URL; ?>/js/lib/chart.min.js"></script>
+    <?php endif; ?>
 
 </head>
 <body>
