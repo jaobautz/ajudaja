@@ -1,12 +1,8 @@
 <?php
-require_once 'session.php'; // Usa require_once
-
-// Garante que config.php foi incluído ANTES para ter BASE_URL
-if (!defined('BASE_URL')) {
-    $config_path = __DIR__ . '/config.php';
-    if (file_exists($config_path)) { require_once $config_path; }
-    else { die("Erro Crítico: config.php não encontrado ou BASE_URL não definida."); }
-}
+// Usamos require_once para garantir que session.php e config.php sejam carregados
+// apenas uma vez, na ordem correta.
+require_once 'config.php'; // Define BASE_URL primeiro
+require_once 'session.php'; // Inicia a sessão e funções CSRF
 
 gerar_token_csrf();
 ?>
@@ -14,11 +10,14 @@ gerar_token_csrf();
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale-1.0">
     <meta name="csrf-token" content="<?php echo $_SESSION['csrf_token']; ?>">
     <title><?php echo $page_title ?? 'AjudaJá'; ?></title>
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="../css/style.css">
+    
+    <link rel="stylesheet" href="<?php echo BASE_URL; ?>/css/style.css">
+
 </head>
 <body>
     <header class="header">
@@ -34,13 +33,11 @@ gerar_token_csrf();
                             <li class="nav-item"><a class="nav-link" href="<?php echo BASE_URL; ?>/pages/dashboard.php">Meu Painel</a></li>
                             <li class="nav-item"><a class="nav-link" href="<?php echo BASE_URL; ?>/pages/perfil.php">Meu Perfil</a></li>
                             <li class="nav-item"><a class="nav-link" href="<?php echo BASE_URL; ?>/pages/caixa_entrada.php"><i data-lucide="message-square"></i> Conversas</a></li>
-
                             <li class="nav-item ms-lg-2">
                                 <a class="btn btn-sm btn-novo-pedido" href="<?php echo BASE_URL; ?>/pages/cadastrar.php">
                                     <i data-lucide="plus-circle"></i> Novo Pedido
                                 </a>
                             </li>
-
                             <li class="nav-item"><a class="nav-link" href="<?php echo BASE_URL; ?>/includes/logout.php">Sair</a></li>
                         <?php else: ?>
                             <li class="nav-item"><a class="nav-link" href="<?php echo BASE_URL; ?>/pages/login.php">Login</a></li>

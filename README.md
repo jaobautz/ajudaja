@@ -1,75 +1,100 @@
-# AjudaJá
+<div align="center">
+  <img src="https://img.shields.io/badge/PHP-777BB4?style=for-the-badge&logo=php&logoColor=white" alt="PHP"/>
+  <img src="https://img.shields.io/badge/PostgreSQL-4169E1?style=for-the-badge&logo=postgresql&logoColor=white" alt="PostgreSQL"/>
+  <img src="https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black" alt="JavaScript"/>
+  <img src="https://img.shields.io/badge/Bootstrap-563D7C?style=for-the-badge&logo=bootstrap&logoColor=white" alt="Bootstrap"/>
+</div>
 
-**Uma plataforma de ajuda comunitária construída com PHP e PostgreSQL.**
+<h1 align="center">
+  AjudaJá
+</h1>
 
-O **AjudaJá** é uma aplicação web completa e funcional, projetada para ser um ponto de encontro digital entre pessoas que precisam de ajuda e voluntários dispostos a oferecer apoio. O sistema permite que usuários criem, gerenciem e interajam com pedidos de ajuda de forma organizada e segura, fortalecendo os laços da comunidade.
+<p align="center">
+  <strong>Uma plataforma de ajuda comunitária robusta e segura, construída com PHP 8+ e PostgreSQL.</strong>
+</p>
 
------
+<p align="center">
+  <a href="#-sobre-o-projeto">Sobre</a> •
+  <a href="#-funcionalidades-em-destaque">Funcionalidades</a> •
+  <a href="#-tecnologias-e-ferramentas">Tecnologias</a> •
+  <a href="#-instalação-crítica">Instalação</a>
+</p>
 
-### Visão Geral do Projeto
+<div align="center">
+  <img src="https://img.shields.io/badge/status-pronto_para_deploy-brightgreen?style=for-the-badge" alt="Status do Projeto"/>
+</div>
 
-*A imagem abaixo demonstra a interface principal do sistema, exibindo a listagem de pedidos na página inicial.*
+---
 
------
+### 💡 Sobre o Projeto
+O **AjudaJá** é uma aplicação web completa e pronta para produção, projetada para conectar pessoas que precisam de ajuda com voluntários da comunidade. A plataforma é focada em segurança (CSRF, SQL Injection, Senhas Fortes), performance (Índices GIST/GIN no PostgreSQL) e uma experiência de usuário rica, incluindo chat interno, sistema de avaliação por estrelas e filtros de geolocalização por proximidade.
 
-### ✨ Funcionalidades Essenciais
+---
 
-  - **Autenticação Segura:** Sistema completo de Cadastro e Login de usuários com senhas criptografadas, garantindo a segurança dos dados.
-  - **Dashboard Pessoal:** Cada usuário possui um painel de controle exclusivo para gerenciar seus pedidos, acompanhar estatísticas e visualizar o engajamento através de gráficos dinâmicos.
-  - **Gestão Completa de Pedidos (CRUD):** Usuários autenticados podem facilmente Criar, Editar e Excluir seus próprios pedidos de ajuda.
-  - **Sistema de Comentários Interativo:** Uma seção de discussão em cada pedido permite que a comunidade interaja, tire dúvidas e ofereça apoio, com um contador de comentários visível na listagem principal.
-  - **Busca e Filtragem Avançada:** Ferramentas intuitivas na página inicial para que voluntários encontrem facilmente os pedidos por palavra-chave, categoria ou nível de urgência.
-  - **Contato Direto e Seguro:** Integração com o WhatsApp para facilitar a comunicação entre o voluntário e o solicitante sem expor informações desnecessárias na plataforma.
-  - **Design Moderno e Responsivo:** Interface limpa e profissional, construída com Bootstrap 5, que se adapta perfeitamente a qualquer tamanho de tela, seja desktop, tablet ou celular.
+### ✨ Funcionalidades em Destaque
 
------
+* **Autenticação Segura:** Cadastro com validação de senha forte, login seguro (previne Session Fixation) e recuperação de conta (a ser implementada).
+* **CRUD de Pedidos:** Usuários criam e editam pedidos, com geocodificação automática de CEP para Cidade, Estado, Latitude e Longitude via APIs (ViaCEP, Nominatim).
+* **Chat Interno Privado:** Sistema de mensagens diretas entre solicitante e voluntário, substituindo o WhatsApp para maior privacidade.
+* **Sistema de Avaliação:** Solicitantes podem avaliar a ajuda recebida com 1-5 estrelas e um comentário, que fica visível no perfil público do voluntário.
+* **Perfil Público:** Usuários podem ver a atividade de outros membros, incluindo suas avaliações recebidas (média de estrelas, total) e seus pedidos de ajuda criados.
+* **Filtro por Proximidade:** A página inicial permite que voluntários busquem pedidos pelo *seu* CEP e um raio (ex: 10km), ordenando os resultados por distância.
+* **Discussão Pública:** Sistema de comentários aninhados (threads) em cada pedido para dúvidas públicas.
 
-### 🛠️ Tecnologias Utilizadas
+---
 
-O projeto foi construído com uma pilha de tecnologias modernas e confiáveis:
+### 🚀 Tecnologias e Ferramentas
 
-  - **Backend:** PHP 8+
-  - **Banco de Dados:** PostgreSQL 14+
-  - **Frontend:**
-      - HTML5 e CSS3 (com Design System via variáveis)
-      - JavaScript (ES6+)
-      - Bootstrap 5
-  - **Ferramentas e APIs:**
-      - **Chart.js:** Para a criação dos gráficos do dashboard.
-      - **Lucide Icons:** Para a iconografia limpa e moderna.
-      - **DiceBear:** Para a geração de avatares personalisados.
+* **Backend:** PHP 8+ (com extensões `pgsql`, `curl`, `mbstring`)
+* **Frontend:** HTML5, CSS3 (Design System com Variáveis), JavaScript (ES6+), Bootstrap 5, Lucide Icons
+* **Banco de Dados:** PostgreSQL 14+
+* **Extensões PostgreSQL (Obrigatórias):** `pg_trgm`, `btree_gist`, `cube`, `earthdistance` (o script SQL tenta instalá-las).
+* **APIs Externas:**
+    * **ViaCEP:** Para validar CEPs e obter endereços.
+    * **Nominatim (OpenStreetMap):** Para geocodificação (obter Lat/Lon).
+* **Bibliotecas JS:** Inputmask.js (para máscaras de formulário)
 
------
+---
 
-### 🚀 Guia de Instalação
+### 🚨 Instalação (Crítica)
 
-Siga os passos abaixo para configurar e executar o projeto em seu ambiente local.
+Siga estes passos **exatamente** para evitar erros.
 
-**1. Pré-requisitos**
-
-  - Ambiente de servidor local com PHP e PostgreSQL.
-  - Ferramenta de gerenciamento de banco de dados (ex: pgAdmin).
-  - Git instalado.
-
-**2. Clone o Repositório**
-
+**1. Clone o Repositório**
 ```bash
-git clone https://github.com/SEU_USUARIO/ajudaja.git
-cd ajudaja
-```
+# Clone para uma pasta chamada 'ajudajaa' (com dois 'a's)
+git clone [https://github.com/SEU_USUARIO/ajudajaa.git](https://github.com/SEU_USUARIO/ajudajaa.git)
+cd ajudajaa
+2. Configure o Banco de Dados
 
-**3. Configure o Banco de Dados**
+No PostgreSQL, crie um banco de dados vazio chamado ajudaja (com um 'a' só).
 
-  - No pgAdmin, crie um novo banco de dados vazio chamado `ajudaja`.
-  - Abra a ferramenta de consulta para este banco, copie todo o conteúdo do arquivo `ajudaja.sql` e execute o script.
+Abra a ferramenta de consulta e execute o script ajudaja.sql inteiro. Ele criará todas as tabelas, extensões e índices.
 
-**4. Configure a Conexão**
+3. Configure o Projeto (Passo Mais Importante)
 
-  - Abra o arquivo `includes/config.php`.
-  - Altere a variável `$password` para a senha do seu usuário do PostgreSQL.
+Você DEVE editar dois arquivos na pasta includes/:
 
-**5. Execute o Projeto**
+includes/config.php:
 
-  - Mova a pasta do projeto para o diretório raiz do seu servidor web (ex: `htdocs`).
-  - Inicie os serviços Apache e PostgreSQL.
-  - Acesse no seu navegador: `http://localhost/ajudaja/pages/`
+Verifique se define('BASE_URL', ...) aponta para sua pasta (ex: http://localhost/ajudajaa).
+
+Verifique se $dbname está como 'ajudaja'.
+
+Altere a $password para a senha do seu usuário PostgreSQL local.
+
+includes/geocoding.php:
+
+A API Nominatim (OpenStreetMap) exige um User-Agent válido.
+
+Encontre a linha: curl_setopt($ch, CURLOPT_USERAGENT, 'AjudaJaaApp/1.0 (seuemail@seudominio.com)');
+
+MUDE (seuemail@seudominio.com) para seu e-mail real ou o site onde a aplicação será hospedada. Se não fizer isso, a geolocalização falhará.
+
+4. Verifique as Dependências do Servidor
+
+Certifique-se de que sua instalação do PHP tem as extensões php_pgsql (para conectar ao banco) e php_curl (para as APIs) habilitadas no seu php.ini.
+
+5. Execute o Projeto
+
+Acesse a URL definida na BASE_URL: http://localhost/ajudajaa/pages/

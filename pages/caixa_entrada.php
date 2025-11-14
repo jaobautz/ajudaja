@@ -1,18 +1,18 @@
 <?php
 $page_title = 'Minhas Conversas';
-require_once '../includes/config.php'; // Usa require_once
-require_once '../includes/autenticacao.php'; // Usa require_once
-require_once '../includes/session.php'; // Usa require_once
+require_once '../includes/config.php'; 
+require_once '../includes/autenticacao.php'; 
+require_once '../includes/session.php'; 
 
 $usuario_id = $_SESSION['usuario_id'];
 
-// === REPUTAÇÃO: Query atualizada para buscar status_conversa ===
+// Query atualizada (sem reputacao, usa status_conversa)
 $sql = "
     SELECT 
         c.id as conversa_id,
-        c.status_conversa, -- Adicionado status
-        c.usuario_criador_id, -- Adicionado ID do criador
-        c.usuario_voluntario_id, -- Adicionado ID do voluntário
+        c.status_conversa, 
+        c.usuario_criador_id, 
+        c.usuario_voluntario_id, 
         p.titulo as pedido_titulo,
         p.id as pedido_id,
         CASE
@@ -47,8 +47,7 @@ if ($result) {
     }
 }
 
-// Inclui o header APÓS buscar os dados
-require_once '../includes/header.php'; // Usa require_once
+require_once '../includes/header.php'; 
 ?>
 
 <main class="container my-5">
@@ -67,7 +66,6 @@ require_once '../includes/header.php'; // Usa require_once
             <?php else: ?>
                 <?php foreach ($conversas as $conversa): 
                     $avatar_seed = urlencode($conversa['outro_usuario_nome']);
-                    // Verifica se o usuário logado é o CRIADOR do pedido desta conversa
                     $sou_criador = ($conversa['usuario_criador_id'] == $usuario_id);
                     $ajuda_confirmada = ($conversa['status_conversa'] == 'Ajuda Confirmada');
                 ?>
@@ -79,25 +77,22 @@ require_once '../includes/header.php'; // Usa require_once
                                     <h5 class="mb-1">
                                         <?php echo htmlspecialchars($conversa['outro_usuario_nome']); ?>
                                         <?php if ($ajuda_confirmada): ?>
-                                            <span class="badge bg-success ms-2" style="font-size: 0.7em;"><i data-lucide="check-circle" style="width: 1em; height: 1em;"></i> Ajuda Confirmada</span>
+                                            <span class="badge bg-success ms-2" style="font-size: 0.7em;"><i data-lucide="check-circle" style="width: 1em; height: 1em;"></i> Avaliado</span>
                                         <?php endif; ?>
                                     </h5>
                                     <p class="mb-0 text-secondary" style="font-size: 0.9rem;">Sobre o pedido: "<?php echo htmlspecialchars($conversa['pedido_titulo']); ?>"</p>
                                 </div>
                             </a>
 
-                            <div class="ms-3 text-end" style="min-width: 150px;"> <?php if ($sou_criador && !$ajuda_confirmada): ?>
-                                    <form action="../includes/marcar_ajuda.php" method="POST" onsubmit="return confirm('Tem certeza que deseja confirmar que recebeu ajuda nesta conversa? Isso dará +1 ponto de reputação ao voluntário.');">
-                                        <input type="hidden" name="csrf_token" value="<?php echo $_SESSION['csrf_token']; ?>">
-                                        <input type="hidden" name="conversa_id" value="<?php echo $conversa['conversa_id']; ?>">
-                                        <button type="submit" class="btn btn-sm btn-outline-success">
-                                            <i data-lucide="award" style="width: 1em; height: 1em;"></i> Confirmar Ajuda
-                                        </button>
-                                    </form>
+                            <div class="ms-3 text-end" style="min-width: 150px;"> 
+                                <?php if ($sou_criador && !$ajuda_confirmada): ?>
+                                    <a href="avaliar.php?conversa_id=<?php echo $conversa['conversa_id']; ?>" class="btn btn-sm btn-outline-success">
+                                        <i data-lucide="award" style="width: 1em; height: 1em;"></i> Avaliar Ajuda
+                                    </a>
                                 <?php elseif ($sou_criador && $ajuda_confirmada): ?>
                                     <span class="text-success" style="font-size: 0.8rem;"><i data-lucide="check-circle" style="width: 1em; height: 1em;"></i> Agradecimento enviado</span>
                                 <?php else: ?>
-                                    <a href="chat.php?conversa_id=<?php echo $conversa['conversa_id']; ?>" class="btn btn-sm btn-outline-primary">
+                                     <a href="chat.php?conversa_id=<?php echo $conversa['conversa_id']; ?>" class="btn btn-sm btn-outline-primary">
                                          <i data-lucide="message-circle" style="width: 1em; height: 1em;"></i> Abrir Chat
                                      </a>
                                 <?php endif; ?>
@@ -112,5 +107,5 @@ require_once '../includes/header.php'; // Usa require_once
 
 <?php
 if ($conn) { pg_close($conn); }
-require_once '../includes/footer.php'; // Usa require_once
+require_once '../includes/footer.php'; 
 ?>

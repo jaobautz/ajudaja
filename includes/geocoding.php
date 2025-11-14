@@ -1,17 +1,21 @@
 <?php
+// =======================================================
+// AJUDAJÁ - SERVIÇO DE GEOCODIFICAÇÃO (Versão Original)
+// =======================================================
 
 /**
- * Faz uma requisição HTTP segura usando cURL.
- * @param string 
+ * Faz uma requisição HTTP segura usando cURL com User-Agent.
+ * @param string $url A URL para a qual fazer a requisição.
  * @return string|false A resposta da API ou false em caso de erro.
  */
 function http_request($url) {
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $url);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-    curl_setopt($ch, CURLOPT_TIMEOUT, 5); // Timeout de 5 segundos
-    curl_setopt($ch, CURLOPT_USERAGENT, 'AjudaJaaApp/1.0 (contato@seusite.com)');
-
+    curl_setopt($ch, CURLOPT_TIMEOUT, 5);
+    // User-Agent é OBRIGATÓRIO para a API do Nominatim (OpenStreetMap)
+    curl_setopt($ch, CURLOPT_USERAGENT, 'AjudaJaaApp/1.0 (seuemail@seudominio.com)');
+    
     $response = curl_exec($ch);
     $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     curl_close($ch);
@@ -28,7 +32,7 @@ function http_request($url) {
  * Obtém dados de geolocalização (Cidade, Estado, Lat, Lon) a partir de um CEP.
  * Usa ViaCEP para obter o endereço e Nominatim para obter as coordenadas.
  *
- * @param string $cep CEP com 8 dígitos (apenas números).
+ * @param string $cep_limpo CEP com 8 dígitos (apenas números).
  * @return array|null Um array com [cidade, estado, latitude, longitude] ou null se falhar.
  */
 function getGeoDataFromCEP($cep_limpo) {
@@ -62,10 +66,9 @@ function getGeoDataFromCEP($cep_limpo) {
     }
 
     // --- ETAPA B: Chamar Nominatim (OpenStreetMap) para obter Lat/Lon ---
-    // Montamos uma query estruturada para o Nominatim ser mais preciso
     $query_params = http_build_query([
-        'format' => 'jsonv2', // Formato JSON mais recente
-        'limit' => 1,          // Queremos apenas o melhor resultado
+        'format' => 'jsonv2', 
+        'limit' => 1,          
         'street' => $logradouro,
         'city' => $cidade,
         'state' => $estado,
